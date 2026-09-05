@@ -156,7 +156,17 @@ dashboard via `ROLE_ROUTES` in `services/authService.js`.
 | 8 | Housekeeping dashboard | Done |
 | 9 | Service staff dashboard | Done |
 | 10 | Admin dashboard, 12 modules, analytics | Done |
-| 11–13 | Responsive sweep, accessibility polish, flow testing | |
+| 11–13 | Responsive sweep, accessibility polish, flow testing | Done |
+
+All 13 phases complete.
+
+### Accessibility
+
+Contrast is measured, not eyeballed. Every foreground/background pair in
+`tokens.css` meets WCAG 2.1 AA — text at 4.5:1, form-control boundaries at 3:1
+(1.4.11). `--line` stays light for decorative card edges; `--field-border`
+exists separately because an input's edge identifies the control and has to
+clear the bar.
 
 Responsive layout and accessibility are exit criteria for every phase, not
 tasks deferred to the end.

@@ -344,7 +344,10 @@
   top: calc(100% + 10px);
   right: 0;
   z-index: var(--z-drawer);
-  min-width: 250px;
+  /* Clamped to the viewport so the panel can never hang off the left edge on a
+     narrow screen — it is anchored right, so it grows leftwards. */
+  min-width: min(250px, calc(100vw - var(--space-8)));
+  max-width: calc(100vw - var(--space-6));
   padding: var(--space-2);
   border: 1px solid var(--line);
   border-radius: var(--radius-md);
