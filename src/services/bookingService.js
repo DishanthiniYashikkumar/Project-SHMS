@@ -9,7 +9,7 @@
 
 import { USE_MOCK_API, clone, delay, paginate, request } from "./apiClient";
 import { BOOKING_STATUS, PAYMENT_STATUS, bookings, invoices } from "./mock/bookings";
-import { roomTypes } from "./mock/rooms";
+import { ROOM_STATUS, rooms, roomTypes } from "./mock/rooms";
 
 export { BOOKING_STATUS, PAYMENT_STATUS };
 
@@ -264,7 +264,13 @@ export async function cancelBooking(bookingId, reason = "") {
   return clone(booking);
 }
 
-/** Allocates a physical room and marks the guest as checked in. */
+/**
+ * Allocates a physical room and marks the guest as checked in.
+ *
+ * The room moves to OCCUPIED as part of the same operation. Leaving it READY
+ * would let the front desk allocate the same room to a second arrival — the
+ * room state has to follow the booking, not be a separate thing to remember.
+ */
 export async function checkInBooking(bookingId, { roomId, roomNumber }) {
   if (!USE_MOCK_API) {
     return request(`/bookings/${bookingId}/check-in`, { method: "POST", body: { roomId } });
@@ -275,9 +281,20 @@ export async function checkInBooking(bookingId, { roomId, roomNumber }) {
   if (!booking) throw new Error("We couldn't find that booking.");
 
   Object.assign(booking, { status: BOOKING_STATUS.CHECKED_IN, roomId, roomNumber });
+
+  const room = rooms.find((item) => item.id === roomId);
+  if (room) room.status = ROOM_STATUS.OCCUPIED;
+
   return clone(booking);
 }
 
+/**
+ * Closes the stay and hands the room to housekeeping.
+ *
+ * Returning it straight to AVAILABLE would let it be sold while the previous
+ * guest's towels are still on the floor, so it goes to CLEANING and only
+ * housekeeping can move it on.
+ */
 export async function checkOutBooking(bookingId) {
   if (!USE_MOCK_API) return request(`/bookings/${bookingId}/check-out`, { method: "POST" });
 
@@ -286,6 +303,10 @@ export async function checkOutBooking(bookingId) {
   if (!booking) throw new Error("We couldn't find that booking.");
 
   booking.status = BOOKING_STATUS.CHECKED_OUT;
+
+  const room = rooms.find((item) => item.id === booking.roomId);
+  if (room) room.status = ROOM_STATUS.CLEANING;
+
   return clone(booking);
 }
 

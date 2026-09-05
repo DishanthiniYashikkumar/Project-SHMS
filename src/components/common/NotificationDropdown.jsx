@@ -130,15 +130,18 @@ function NotificationDropdown({ notifications, userId, onChange, viewAllHref }) 
             </ul>
           )}
 
-          <div className="shms-notify-foot">
-            <Link
-              className="shms-btn shms-btn-outline shms-btn-sm shms-btn-block"
-              to={viewAllHref}
-              onClick={() => setIsOpen(false)}
-            >
-              View all notifications
-            </Link>
-          </div>
+          {/* Roles without a notifications archive get no "view all". */}
+          {viewAllHref && (
+            <div className="shms-notify-foot">
+              <Link
+                className="shms-btn shms-btn-outline shms-btn-sm shms-btn-block"
+                to={viewAllHref}
+                onClick={() => setIsOpen(false)}
+              >
+                View all notifications
+              </Link>
+            </div>
+          )}
         </div>
       )}
     </div>

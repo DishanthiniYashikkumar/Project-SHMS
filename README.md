@@ -152,7 +152,8 @@ dashboard via `ROLE_ROUTES` in `services/authService.js`.
 | 4 | Register, forgot password, auth context | Done |
 | 5 | Booking flow | Done |
 | 6 | Guest portal | Done |
-| 7–10 | Reception, housekeeping, service, admin dashboards | Next |
+| 7 | Receptionist dashboard | Done |
+| 8–10 | Housekeeping, service, admin dashboards | Next |
 | 11–13 | Responsive sweep, accessibility polish, flow testing | |
 
 Responsive layout and accessibility are exit criteria for every phase, not
