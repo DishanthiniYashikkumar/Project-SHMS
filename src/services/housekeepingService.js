@@ -26,7 +26,9 @@ export { HOUSEKEEPING_TASK_LABELS, REQUEST_STATUS as TASK_STATUS };
  */
 const ROOM_STATE_FOR_TASK = {
   [REQUEST_STATUS.IN_PROGRESS]: ROOM_STATUS.CLEANING,
-  [REQUEST_STATUS.COMPLETED]: ROOM_STATUS.READY,
+  // Completing a clean does NOT make a room sellable — it makes it CLEAN and
+  // awaiting inspection. Only `inspectRoom` releases it.
+  [REQUEST_STATUS.COMPLETED]: ROOM_STATUS.CLEAN,
 };
 
 /**
@@ -100,6 +102,29 @@ export async function updateTaskStatus(taskId, status) {
   }
 
   return clone(task);
+}
+
+/**
+ * Passes a cleaned room at inspection, releasing it back to sellable stock.
+ *
+ * Separate from completing the task on purpose: a supervisor confirming the
+ * room is the last gate before a guest walks into it.
+ *
+ * @param {string} roomId
+ * @param {{ passed: boolean, note?: string }} outcome
+ */
+export async function inspectRoom(roomId, { passed, note } = { passed: true }) {
+  if (!USE_MOCK_API) {
+    return request(`/housekeeping/rooms/${roomId}/inspect`, {
+      method: "POST",
+      body: { passed, note },
+    });
+  }
+
+  await delay(500);
+
+  // Failing an inspection sends the room back to the cleaning queue.
+  return updateRoomStatus(roomId, passed ? ROOM_STATUS.INSPECTED : ROOM_STATUS.DIRTY);
 }
 
 /**

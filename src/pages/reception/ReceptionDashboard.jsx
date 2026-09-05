@@ -62,7 +62,8 @@ function ReceptionDashboard() {
     {
       icon: "bi-door-open",
       tone: "shms-stat-icon-success",
-      value: (rooms.data?.AVAILABLE ?? 0) + (rooms.data?.READY ?? 0),
+      value:
+        (rooms.data?.AVAILABLE ?? 0) + (rooms.data?.READY ?? 0) + (rooms.data?.INSPECTED ?? 0),
       label: "Rooms available",
     },
     { icon: "bi-person-check", tone: "shms-stat-icon-gold", value: rooms.data?.OCCUPIED ?? 0, label: "Rooms occupied" },
@@ -292,7 +293,17 @@ function ReceptionDashboard() {
             ) : (
               <div className="shms-panel-body">
                 <ul className="shms-rows" style={{ margin: 0 }}>
-                  {["AVAILABLE", "READY", "RESERVED", "OCCUPIED", "CLEANING", "MAINTENANCE"].map(
+                  {[
+                    "AVAILABLE",
+                    "READY",
+                    "INSPECTED",
+                    "RESERVED",
+                    "OCCUPIED",
+                    "DIRTY",
+                    "CLEANING",
+                    "CLEAN",
+                    "MAINTENANCE",
+                  ].map(
                     (status) => (
                       <li key={status}>
                         <div

@@ -292,8 +292,8 @@ export async function checkInBooking(bookingId, { roomId, roomNumber }) {
  * Closes the stay and hands the room to housekeeping.
  *
  * Returning it straight to AVAILABLE would let it be sold while the previous
- * guest's towels are still on the floor, so it goes to CLEANING and only
- * housekeeping can move it on.
+ * guest's towels are still on the floor, so it goes to DIRTY and only the
+ * housekeeping chain can move it back to sellable.
  */
 export async function checkOutBooking(bookingId) {
   if (!USE_MOCK_API) return request(`/bookings/${bookingId}/check-out`, { method: "POST" });
@@ -305,7 +305,7 @@ export async function checkOutBooking(bookingId) {
   booking.status = BOOKING_STATUS.CHECKED_OUT;
 
   const room = rooms.find((item) => item.id === booking.roomId);
-  if (room) room.status = ROOM_STATUS.CLEANING;
+  if (room) room.status = ROOM_STATUS.DIRTY;
 
   return clone(booking);
 }

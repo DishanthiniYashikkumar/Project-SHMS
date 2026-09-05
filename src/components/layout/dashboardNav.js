@@ -151,16 +151,68 @@ const RECEPTION_NAV = {
 };
 
 /* -------------------------------------------------------------------------- */
+/* Housekeeping                                                               */
+/* -------------------------------------------------------------------------- */
+
+const HOUSEKEEPING_NAV = {
+  notificationsPath: null,
+  profilePath: null,
+  sections: [
+    {
+      legend: "Today",
+      items: [
+        {
+          to: "/housekeeping/dashboard",
+          label: "Dashboard",
+          icon: "bi-speedometer2",
+          subtitle: "Your rooms and the property turnaround",
+          end: true,
+        },
+        {
+          to: "/housekeeping/tasks",
+          label: "Cleaning Tasks",
+          icon: "bi-list-check",
+          subtitle: "Start and complete your rooms",
+        },
+        {
+          to: "/housekeeping/rooms",
+          label: "Assigned Rooms",
+          icon: "bi-grid-3x3-gap",
+          subtitle: "Inspect and release rooms back to stock",
+        },
+      ],
+    },
+    {
+      legend: "Reported",
+      items: [
+        {
+          to: "/housekeeping/requests",
+          label: "Guest Requests",
+          icon: "bi-bell",
+          subtitle: "Towels, linen and anything else asked for",
+        },
+        {
+          to: "/housekeeping/maintenance",
+          label: "Maintenance",
+          icon: "bi-tools",
+          subtitle: "Faults found on the floor",
+        },
+      ],
+    },
+  ],
+};
+
+/* -------------------------------------------------------------------------- */
 /* Registry                                                                   */
 /* -------------------------------------------------------------------------- */
 
 const EMPTY_NAV = { notificationsPath: null, profilePath: null, sections: [] };
 
-/** Housekeeping, service and admin land in phases 8-10. */
+/** Service and admin land in phases 9-10. */
 export const NAV_BY_ROLE = {
   [ROLES.GUEST]: GUEST_NAV,
   [ROLES.RECEPTIONIST]: RECEPTION_NAV,
-  [ROLES.HOUSEKEEPING]: EMPTY_NAV,
+  [ROLES.HOUSEKEEPING]: HOUSEKEEPING_NAV,
   [ROLES.SERVICE_STAFF]: EMPTY_NAV,
   [ROLES.ADMIN]: EMPTY_NAV,
 };

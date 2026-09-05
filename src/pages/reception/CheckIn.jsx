@@ -5,7 +5,7 @@ import StatusBadge from "../../components/common/StatusBadge";
 import { useAsync } from "../../hooks/useAsync";
 import { useToast } from "../../hooks/useToast";
 import { checkInBooking, getFrontDeskSummary } from "../../services/bookingService";
-import { ROOM_STATUS, getRooms } from "../../services/roomService";
+import { SELLABLE_STATUSES, getRooms } from "../../services/roomService";
 import { formatCurrency, formatDateRange } from "../../utils/format";
 import "../../styles/dashboard.css";
 
@@ -18,7 +18,9 @@ import "../../styles/dashboard.css";
  * a front desk system should make impossible rather than merely discourage.
  */
 
-const ALLOCATABLE = [ROOM_STATUS.AVAILABLE, ROOM_STATUS.READY, ROOM_STATUS.RESERVED];
+// A room is only offered once housekeeping has released it — see
+// SELLABLE_STATUSES in mock/rooms.js for the turnaround chain.
+const ALLOCATABLE = SELLABLE_STATUSES;
 
 function CheckIn() {
   const toast = useToast();
