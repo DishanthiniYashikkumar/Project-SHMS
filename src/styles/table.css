@@ -124,6 +124,9 @@
   border-bottom: 1px solid var(--line);
   color: var(--body);
   vertical-align: middle;
+  /* Emails and references have no spaces to break at; without this they push
+     the table wider than the screen once it stacks into cards. */
+  overflow-wrap: anywhere;
 }
 
 .shms-table tbody tr:last-child td {

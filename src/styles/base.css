@@ -13,6 +13,25 @@
   box-sizing: border-box;
 }
 
+/*
+ * A last line of defence against horizontal overflow. Long unbroken strings —
+ * email addresses, booking references, URLs — are the usual culprit, and the
+ * brief forbids the page ever scrolling sideways. This breaks them rather than
+ * hiding the symptom with overflow-x:hidden on the body, which would mask a
+ * real layout bug instead of fixing it.
+ */
+body {
+  overflow-wrap: break-word;
+}
+
+/* Media never widens its container. */
+img,
+svg,
+video,
+iframe {
+  max-width: 100%;
+}
+
 /* ==========================================================================
    Layout
    ========================================================================== */
