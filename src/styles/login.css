@@ -1,45 +1,15 @@
 /* ==========================================================================
-   SHMS — Login
-   Scoped under .shms-login so nothing leaks into the rest of the app.
+   Ocean Stays — Auth pages (Login / Register / Forgot password)
+   --------------------------------------------------------------------------
+   Only the split-screen auth layout lives here. Design tokens moved to
+   tokens.css and the field system to forms.css, so this file no longer has to
+   be the whole design system.
+
+   Card classes are namespaced `shms-auth-*` to avoid colliding with the
+   generic `.shms-card` primitive in base.css.
    ========================================================================== */
 
 .shms-login {
-  /* ---- Palette --------------------------------------------------------- */
-  --navy-900: #061529;
-  --navy-800: #0a2140;
-  --navy-700: #0f2e56;
-  --navy-600: #17457a;
-  --navy-500: #24608f;
-
-  --gold-500: #c9a227;
-  --gold-400: #d9b84a;
-  --gold-300: #ead08a;
-  --gold-ink: #8a6d1b; /* gold dark enough for text on white (4.9:1) */
-
-  --ink: #0d1b2a;
-  --body: #55617a;
-  --muted: #8b95a8;
-  --line: #e3e8f0;
-  --field: #f7f9fc;
-  --surface: #ffffff;
-  --canvas: #f2f5fa;
-
-  --danger: #c0392b;
-  --danger-ink: #8f2a1f;
-  --danger-tint: rgba(192, 57, 43, 0.07);
-
-  /* ---- Type ------------------------------------------------------------ */
-  --sans:
-    "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  --display: "Playfair Display", "Iowan Old Style", Georgia, "Times New Roman", serif;
-
-  /* ---- Elevation ------------------------------------------------------- */
-  --shadow-card:
-    0 1px 2px rgba(13, 27, 42, 0.04), 0 18px 40px -20px rgba(13, 27, 42, 0.28),
-    0 4px 12px -6px rgba(13, 27, 42, 0.08);
-
-  --ease: cubic-bezier(0.4, 0, 0.2, 1);
-
   min-height: 100svh;
   display: grid;
   grid-template-columns: 1.05fr 1fr;
@@ -49,12 +19,6 @@
   font-size: 15px;
   line-height: 1.55;
   -webkit-font-smoothing: antialiased;
-}
-
-.shms-login *,
-.shms-login *::before,
-.shms-login *::after {
-  box-sizing: border-box;
 }
 
 /* ==========================================================================
@@ -210,7 +174,7 @@
    RIGHT — form panel
    ========================================================================== */
 
-.shms-panel {
+.shms-auth-panel {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -222,7 +186,7 @@
     var(--canvas);
 }
 
-.shms-card {
+.shms-auth-card {
   width: 100%;
   max-width: 440px;
   padding: 44px 40px 38px;
@@ -232,7 +196,12 @@
   box-shadow: var(--shadow-card);
 }
 
-.shms-card-badge {
+/* Register needs a wider card for its two-column name row. */
+.shms-auth-card-wide {
+  max-width: 540px;
+}
+
+.shms-auth-badge {
   display: grid;
   place-items: center;
   width: 52px;
@@ -245,7 +214,7 @@
   box-shadow: 0 8px 18px -8px rgba(10, 33, 64, 0.65);
 }
 
-.shms-card-title {
+.shms-auth-title {
   margin: 0 0 6px;
   font-size: 1.72rem;
   font-weight: 650;
@@ -253,332 +222,10 @@
   color: var(--ink);
 }
 
-.shms-card-subtitle {
+.shms-auth-subtitle {
   margin: 0 0 30px;
   font-size: 0.94rem;
   color: var(--muted);
-}
-
-/* ==========================================================================
-   Form
-   ========================================================================== */
-
-.shms-form {
-  display: flex;
-  flex-direction: column;
-  gap: 19px;
-}
-
-.shms-field {
-  display: flex;
-  flex-direction: column;
-}
-
-.shms-label {
-  margin-bottom: 8px;
-  font-size: 0.8rem;
-  font-weight: 600;
-  letter-spacing: 0.02em;
-  color: var(--ink);
-}
-
-/* ---- Inputs ------------------------------------------------------------ */
-
-.shms-input-shell {
-  position: relative;
-  display: flex;
-  align-items: center;
-}
-
-.shms-input-icon {
-  position: absolute;
-  left: 16px;
-  font-size: 1rem;
-  color: var(--muted);
-  pointer-events: none;
-  transition: color 0.2s var(--ease);
-}
-
-.shms-input {
-  width: 100%;
-  height: 52px;
-  padding: 0 16px 0 46px;
-  border: 1px solid var(--line);
-  border-radius: 12px;
-  background: var(--field);
-  color: var(--ink);
-  font-family: inherit;
-  font-size: 0.95rem;
-  transition:
-    border-color 0.2s var(--ease),
-    box-shadow 0.2s var(--ease),
-    background-color 0.2s var(--ease);
-}
-
-.shms-input.has-trailing-action {
-  padding-right: 50px;
-}
-
-.shms-input::placeholder {
-  color: #a9b2c1;
-}
-
-.shms-input:hover:not(:disabled):not(:focus) {
-  border-color: #cfd8e6;
-}
-
-.shms-input:focus {
-  outline: none;
-  background: var(--surface);
-  border-color: var(--navy-500);
-  box-shadow: 0 0 0 4px rgba(23, 69, 122, 0.11);
-}
-
-.shms-input-shell:focus-within .shms-input-icon {
-  color: var(--navy-600);
-}
-
-.shms-input:disabled {
-  opacity: 0.65;
-  cursor: not-allowed;
-}
-
-.shms-input-shell.is-invalid .shms-input {
-  border-color: var(--danger);
-  background: var(--danger-tint);
-}
-
-.shms-input-shell.is-invalid .shms-input:focus {
-  box-shadow: 0 0 0 4px rgba(192, 57, 43, 0.12);
-}
-
-.shms-input-shell.is-invalid .shms-input-icon {
-  color: var(--danger);
-}
-
-/* ---- Password visibility toggle ---------------------------------------- */
-
-.shms-password-toggle {
-  position: absolute;
-  right: 7px;
-  display: grid;
-  place-items: center;
-  width: 38px;
-  height: 38px;
-  padding: 0;
-  border: 0;
-  border-radius: 9px;
-  background: transparent;
-  color: var(--muted);
-  font-size: 1rem;
-  cursor: pointer;
-  transition: color 0.18s var(--ease), background-color 0.18s var(--ease);
-}
-
-.shms-password-toggle:hover:not(:disabled) {
-  color: var(--navy-700);
-  background: rgba(23, 69, 122, 0.08);
-}
-
-.shms-password-toggle:focus-visible {
-  outline: 2px solid var(--navy-500);
-  outline-offset: 2px;
-}
-
-.shms-password-toggle:disabled {
-  cursor: not-allowed;
-  opacity: 0.5;
-}
-
-/* ---- Messages ---------------------------------------------------------- */
-
-.shms-field-error {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  margin: 8px 0 0;
-  font-size: 0.79rem;
-  font-weight: 500;
-  color: var(--danger-ink);
-  animation: shms-slide-in 0.18s var(--ease);
-}
-
-.shms-alert {
-  display: flex;
-  align-items: flex-start;
-  gap: 10px;
-  padding: 12px 14px;
-  border: 1px solid rgba(192, 57, 43, 0.22);
-  border-radius: 12px;
-  background: var(--danger-tint);
-  color: var(--danger-ink);
-  font-size: 0.85rem;
-  line-height: 1.5;
-  animation: shms-slide-in 0.2s var(--ease);
-}
-
-.shms-alert i {
-  margin-top: 1px;
-  color: var(--danger);
-}
-
-@keyframes shms-slide-in {
-  from {
-    opacity: 0;
-    transform: translateY(-4px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* ---- Remember me / forgot ---------------------------------------------- */
-
-.shms-form-options {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 14px;
-  flex-wrap: wrap;
-  margin-top: -3px;
-}
-
-.shms-checkbox {
-  display: flex;
-  align-items: center;
-  gap: 9px;
-}
-
-.shms-checkbox input {
-  width: 17px;
-  height: 17px;
-  margin: 0;
-  accent-color: var(--navy-700);
-  cursor: pointer;
-}
-
-.shms-checkbox input:focus-visible {
-  outline: 2px solid var(--navy-500);
-  outline-offset: 2px;
-}
-
-.shms-checkbox label {
-  font-size: 0.86rem;
-  color: var(--body);
-  cursor: pointer;
-  user-select: none;
-}
-
-.shms-link {
-  color: var(--navy-600);
-  font-size: 0.86rem;
-  font-weight: 600;
-  text-decoration: none;
-  border-radius: 4px;
-  transition: color 0.18s var(--ease);
-}
-
-.shms-link:hover {
-  color: var(--gold-ink);
-  text-decoration: underline;
-  text-underline-offset: 3px;
-}
-
-.shms-link:focus-visible {
-  outline: 2px solid var(--navy-500);
-  outline-offset: 3px;
-}
-
-.shms-link-strong {
-  font-size: inherit;
-}
-
-/* ---- Submit ------------------------------------------------------------ */
-
-.shms-submit {
-  position: relative;
-  overflow: hidden;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  width: 100%;
-  height: 54px;
-  margin-top: 5px;
-  border: 0;
-  border-radius: 12px;
-  background: linear-gradient(135deg, var(--navy-700) 0%, var(--navy-900) 100%);
-  color: #fff;
-  font-family: inherit;
-  font-size: 0.97rem;
-  font-weight: 600;
-  letter-spacing: 0.015em;
-  cursor: pointer;
-  box-shadow: 0 10px 24px -14px rgba(10, 33, 64, 0.95);
-  transition:
-    transform 0.18s var(--ease),
-    box-shadow 0.22s var(--ease),
-    filter 0.2s var(--ease);
-}
-
-/* Subtle gold sheen that sweeps across on hover — the one flourish. */
-.shms-submit::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(105deg, transparent 35%, rgba(234, 208, 138, 0.28) 50%, transparent 65%);
-  transform: translateX(-110%);
-  transition: transform 0.55s var(--ease);
-}
-
-.shms-submit:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: 0 18px 32px -14px rgba(10, 33, 64, 0.8);
-}
-
-.shms-submit:hover:not(:disabled)::after {
-  transform: translateX(110%);
-}
-
-.shms-submit:hover:not(:disabled) .bi-arrow-right {
-  transform: translateX(3px);
-}
-
-.shms-submit .bi-arrow-right {
-  transition: transform 0.2s var(--ease);
-}
-
-.shms-submit:active:not(:disabled) {
-  transform: translateY(0);
-  filter: brightness(0.94);
-}
-
-.shms-submit:focus-visible {
-  outline: 3px solid var(--gold-400);
-  outline-offset: 3px;
-}
-
-.shms-submit:disabled {
-  cursor: not-allowed;
-  opacity: 0.8;
-  box-shadow: none;
-  transform: none;
-}
-
-.shms-spinner {
-  width: 17px;
-  height: 17px;
-  border: 2px solid rgba(255, 255, 255, 0.32);
-  border-top-color: #fff;
-  border-radius: 50%;
-  animation: shms-spin 0.7s linear infinite;
-}
-
-@keyframes shms-spin {
-  to {
-    transform: rotate(360deg);
-  }
 }
 
 /* ---- Footer bits ------------------------------------------------------- */
@@ -606,27 +253,81 @@
   color: var(--gold-ink);
 }
 
+/* ==========================================================================
+   Demo account note
+   --------------------------------------------------------------------------
+   DEVELOPMENT AID. Delete this block and the <aside> in pages/auth/Login.jsx
+   before any real deployment — the mock accounts it advertises disappear with
+   VITE_USE_MOCK_AUTH="false" anyway.
+   ========================================================================== */
+
 .shms-demo-note {
   width: 100%;
   max-width: 440px;
-  padding: 13px 16px;
+  padding: 14px 16px;
   border: 1px dashed #ccd6e6;
   border-radius: 12px;
   font-size: 0.76rem;
-  line-height: 1.65;
+  line-height: 1.6;
   color: var(--muted);
 }
 
 .shms-demo-note strong {
+  display: block;
+  margin-bottom: 7px;
+  font-size: 0.78rem;
   color: var(--body);
 }
 
-.shms-demo-note code {
+.shms-demo-list {
+  display: grid;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.shms-demo-list li {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.shms-demo-list code {
   padding: 1px 5px;
   border-radius: 4px;
   background: rgba(23, 69, 122, 0.07);
   color: var(--navy-600);
   font-size: 0.95em;
+  overflow-wrap: anywhere;
+}
+
+.shms-demo-list span {
+  flex: none;
+  color: var(--muted);
+}
+
+/* A discreet way back to the public site from the auth screens. */
+.shms-auth-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--muted);
+  text-decoration: none;
+  transition: color 0.18s var(--ease);
+}
+
+.shms-auth-back:hover {
+  color: var(--navy-600);
+}
+
+.shms-auth-back:focus-visible {
+  outline: 2px solid var(--navy-500);
+  outline-offset: 3px;
+  border-radius: 4px;
 }
 
 /* ==========================================================================
@@ -640,11 +341,11 @@
     gap: 36px;
   }
 
-  .shms-card {
+  .shms-auth-card {
     padding: 38px 32px 32px;
   }
 
-  .shms-panel {
+  .shms-auth-panel {
     padding: 40px 28px;
   }
 }
@@ -704,12 +405,12 @@
     display: none;
   }
 
-  .shms-panel {
+  .shms-auth-panel {
     padding: 0 20px 44px;
     justify-content: flex-start;
   }
 
-  .shms-card {
+  .shms-auth-card {
     margin-top: -34px; /* lift the card over the banner */
     border-radius: 22px;
   }
@@ -739,11 +440,11 @@
     font-size: 0.95rem;
   }
 
-  .shms-card {
+  .shms-auth-card {
     padding: 30px 22px 26px;
   }
 
-  .shms-card-title {
+  .shms-auth-title {
     font-size: 1.5rem;
   }
 
@@ -758,32 +459,7 @@
     padding: 36px 44px;
   }
 
-  .shms-panel {
+  .shms-auth-panel {
     padding: 32px 28px;
-  }
-}
-
-/* ==========================================================================
-   Motion & contrast preferences
-   ========================================================================== */
-
-@media (prefers-reduced-motion: reduce) {
-  .shms-login *,
-  .shms-login *::before,
-  .shms-login *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-  }
-
-  .shms-submit:hover:not(:disabled) {
-    transform: none;
-  }
-}
-
-@media (prefers-contrast: more) {
-  .shms-login {
-    --line: #9aa6b8;
-    --muted: #5c6678;
   }
 }

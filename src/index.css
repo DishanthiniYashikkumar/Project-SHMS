@@ -8,6 +8,12 @@
   text-rendering: optimizeLegibility;
 }
 
+html {
+  /* In-page anchors glide rather than jump. base.css disables this under
+     prefers-reduced-motion. */
+  scroll-behavior: smooth;
+}
+
 html,
 body,
 #root {

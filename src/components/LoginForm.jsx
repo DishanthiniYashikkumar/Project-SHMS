@@ -1,6 +1,7 @@
 import { useId, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import { login, validateCredentials } from "../services/authService";
+import { useAuth } from "../hooks/useAuth";
+import { validateCredentials } from "../services/authService";
 
 /**
  * Controlled login form. Owns field state, validation and the submit lifecycle.
@@ -11,6 +12,7 @@ import { login, validateCredentials } from "../services/authService";
  */
 function LoginForm({ onAuthenticated }) {
   const uid = useId();
+  const { signIn } = useAuth();
   const emailId = `${uid}-email`;
   const passwordId = `${uid}-password`;
   const rememberId = `${uid}-remember`;
@@ -65,7 +67,7 @@ function LoginForm({ onAuthenticated }) {
 
     setIsSubmitting(true);
     try {
-      const { user } = await login({
+      const { user } = await signIn({
         email: values.email,
         password: values.password,
         remember: values.remember,
