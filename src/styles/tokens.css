@@ -25,8 +25,26 @@
   /* ---- Neutrals --------------------------------------------------------- */
   --ink: #0d1b2a; /* headings, primary text */
   --body: #55617a; /* body copy */
-  --muted: #8b95a8; /* captions, placeholders, meta */
-  --line: #e3e8f0; /* borders, dividers */
+
+  /*
+   * Secondary text. Measured at 4.55:1 against --canvas, the lightest surface
+   * it sits on, so it meets WCAG AA (4.5:1) everywhere it is used. The obvious
+   * lighter grey (#8b95a8) reads better but lands at 2.76:1 — captions, hints
+   * and table meta are content, not decoration, so they have to clear the bar.
+   */
+  --muted: #677084;
+
+  --line: #e3e8f0; /* dividers and card edges — decorative, not a UI boundary */
+
+  /*
+   * Form-control borders are a different case: an input's edge is what marks it
+   * as a control, so WCAG 1.4.11 wants 3:1. --line is 1.23:1 and fails, hence a
+   * separate token used only by inputs, selects and textareas.
+   */
+  --field-border: #8b909c;
+  --field-border-hover: #8c95a6;
+  --placeholder: #6a7385; /* 4.52:1 on --field */
+
   --field: #f7f9fc; /* input backgrounds */
   --surface: #ffffff; /* cards, sheets */
   --canvas: #f2f5fa; /* page background */
@@ -130,5 +148,8 @@
   :root {
     --line: #9aa6b8;
     --muted: #5c6678;
+    --field-border: #6b7280;
+    --field-border-hover: #55617a;
+    --placeholder: #55617a;
   }
 }
