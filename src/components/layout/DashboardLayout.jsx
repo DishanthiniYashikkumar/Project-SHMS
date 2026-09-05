@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 import DashboardSidebar from "./DashboardSidebar";
+import { getNotificationsPath, getProfilePath, resolveHeading } from "./dashboardNav";
 import NotificationDropdown from "../common/NotificationDropdown";
 import { useAuth } from "../../hooks/useAuth";
 import { getNotifications } from "../../services/notificationService";
@@ -15,26 +16,6 @@ import "../../styles/dashboard.css";
  * heading through the `title` / `subtitle` props on the Outlet context.
  */
 
-/** Page headings, keyed by route. Keeps the topbar honest without prop drilling. */
-const PAGE_TITLES = {
-  "/guest/dashboard": { title: "Dashboard", subtitle: "Your stay at a glance" },
-  "/guest/bookings": { title: "My Bookings", subtitle: "Current, upcoming and past stays" },
-  "/guest/requests": { title: "Service Requests", subtitle: "Anything you need, we'll arrange" },
-  "/guest/payments": { title: "Payments & Bills", subtitle: "Invoices and outstanding balances" },
-  "/guest/notifications": { title: "Notifications", subtitle: "Updates about your stay" },
-  "/guest/feedback": { title: "Give Feedback", subtitle: "Tell us how we did" },
-  "/guest/profile": { title: "Profile", subtitle: "Your details and preferences" },
-};
-
-function resolveHeading(pathname) {
-  if (PAGE_TITLES[pathname]) return PAGE_TITLES[pathname];
-  // Detail routes fall back to their section, e.g. /guest/bookings/bk-1
-  const section = Object.keys(PAGE_TITLES).find(
-    (path) => pathname.startsWith(`${path}/`) && path !== "/",
-  );
-  return section ? PAGE_TITLES[section] : { title: "Ocean Stays", subtitle: "" };
-}
-
 function DashboardLayout() {
   const { user, role, signOut } = useAuth();
   const navigate = useNavigate();
@@ -43,7 +24,11 @@ function DashboardLayout() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [notifications, setNotifications] = useState([]);
 
-  const heading = resolveHeading(location.pathname);
+  // Heading and the bell's destination both come from dashboardNav.js, so the
+  // shell needs no per-role knowledge of its own.
+  const heading = resolveHeading(role, location.pathname);
+  const notificationsPath = getNotificationsPath(role);
+  const profilePath = getProfilePath(role);
 
   /* ---- Notifications ---------------------------------------------------- */
   useEffect(() => {
@@ -138,20 +123,30 @@ function DashboardLayout() {
               notifications={notifications}
               userId={user?.id}
               onChange={setNotifications}
-              viewAllHref="/guest/notifications"
+              viewAllHref={notificationsPath}
             />
 
-            <Link
-              className="shms-account-trigger"
-              to="/guest/profile"
-              aria-label="Your profile"
-              style={{ textDecoration: "none" }}
-            >
-              <span className="shms-account-avatar" aria-hidden="true">
-                {initials(user?.name)}
+            {/* Roles without a profile page show the same chip, unlinked. */}
+            {profilePath ? (
+              <Link
+                className="shms-account-trigger"
+                to={profilePath}
+                aria-label="Your profile"
+                style={{ textDecoration: "none" }}
+              >
+                <span className="shms-account-avatar" aria-hidden="true">
+                  {initials(user?.name)}
+                </span>
+                <span className="shms-account-name">{user?.name}</span>
+              </Link>
+            ) : (
+              <span className="shms-account-trigger" style={{ cursor: "default" }}>
+                <span className="shms-account-avatar" aria-hidden="true">
+                  {initials(user?.name)}
+                </span>
+                <span className="shms-account-name">{user?.name}</span>
               </span>
-              <span className="shms-account-name">{user?.name}</span>
-            </Link>
+            )}
           </div>
         </header>
 

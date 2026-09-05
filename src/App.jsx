@@ -14,6 +14,14 @@ import Notifications from "./pages/guest/Notifications";
 import Payments from "./pages/guest/Payments";
 import Profile from "./pages/guest/Profile";
 import ServiceRequests from "./pages/guest/ServiceRequests";
+import CheckIn from "./pages/reception/CheckIn";
+import CheckOut from "./pages/reception/CheckOut";
+import Guests from "./pages/reception/Guests";
+import ReceptionDashboard from "./pages/reception/ReceptionDashboard";
+import ReceptionPayments from "./pages/reception/Payments";
+import ReceptionRequests from "./pages/reception/Requests";
+import Reservations from "./pages/reception/Reservations";
+import RoomAllocation from "./pages/reception/RoomAllocation";
 import BookingFlow from "./pages/booking/BookingFlow";
 import ForgotPassword from "./pages/auth/ForgotPassword";
 import Login from "./pages/auth/Login";
@@ -45,7 +53,6 @@ import { ROLES } from "./services/authService";
  * nested routes below; phases 7–10 replace these one role at a time.
  */
 const ROLE_DASHBOARDS = [
-  { path: "/reception/dashboard", role: ROLES.RECEPTIONIST },
   { path: "/housekeeping/dashboard", role: ROLES.HOUSEKEEPING },
   { path: "/service/dashboard", role: ROLES.SERVICE_STAFF },
   { path: "/admin/dashboard", role: ROLES.ADMIN },
@@ -107,6 +114,26 @@ function App() {
           <Route path="notifications" element={<Notifications />} />
           <Route path="feedback" element={<Feedback />} />
           <Route path="profile" element={<Profile />} />
+        </Route>
+
+        {/* ---------------------------------------------- Front desk */}
+        <Route
+          path="/reception"
+          element={
+            <ProtectedRoute allow={[ROLES.RECEPTIONIST]}>
+              <DashboardLayout />
+            </ProtectedRoute>
+          }
+        >
+          <Route index element={<Navigate to="/reception/dashboard" replace />} />
+          <Route path="dashboard" element={<ReceptionDashboard />} />
+          <Route path="reservations" element={<Reservations />} />
+          <Route path="check-in" element={<CheckIn />} />
+          <Route path="check-out" element={<CheckOut />} />
+          <Route path="rooms" element={<RoomAllocation />} />
+          <Route path="guests" element={<Guests />} />
+          <Route path="payments" element={<ReceptionPayments />} />
+          <Route path="requests" element={<ReceptionRequests />} />
         </Route>
 
         {/* --------------------------------------------- Role dashboards */}
