@@ -21,6 +21,7 @@ export const users = [
   },
   {
     id: "usr-recep-01",
+    department: "Front Office",
     firstName: "Dilani",
     lastName: "Rathnayake",
     name: "Dilani Rathnayake",
@@ -33,6 +34,7 @@ export const users = [
   },
   {
     id: "usr-hk-01",
+    department: "Housekeeping",
     firstName: "Kumari",
     lastName: "Silva",
     name: "Kumari Silva",
@@ -45,6 +47,7 @@ export const users = [
   },
   {
     id: "usr-hk-02",
+    department: "Housekeeping",
     firstName: "Sanduni",
     lastName: "Herath",
     name: "Sanduni Herath",
@@ -57,6 +60,7 @@ export const users = [
   },
   {
     id: "usr-service-01",
+    department: "Guest Services",
     firstName: "Nuwan",
     lastName: "Jayasuriya",
     name: "Nuwan Jayasuriya",
@@ -69,6 +73,7 @@ export const users = [
   },
   {
     id: "usr-service-02",
+    department: "Maintenance",
     firstName: "Ishara",
     lastName: "Bandara",
     name: "Ishara Bandara",
@@ -81,6 +86,7 @@ export const users = [
   },
   {
     id: "usr-service-03",
+    department: "Food & Beverage",
     firstName: "Tharindu",
     lastName: "Alwis",
     name: "Tharindu Alwis",
@@ -93,6 +99,7 @@ export const users = [
   },
   {
     id: "usr-admin-01",
+    department: "Management",
     firstName: "Rohan",
     lastName: "De Silva",
     name: "Rohan De Silva",

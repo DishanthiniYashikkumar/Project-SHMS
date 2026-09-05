@@ -27,6 +27,57 @@ export async function getFacilities() {
   return clone(facilities);
 }
 
+/** Facility states the admin module manages. */
+export const FACILITY_STATUS = {
+  OPEN: "OPEN",
+  CLOSED: "CLOSED",
+  MAINTENANCE: "MAINTENANCE",
+};
+
+/**
+ * Updates a facility.
+ *
+ * Closing one hides it from the public site as well as the admin list, which is
+ * the point: a spa under maintenance should stop being advertised the moment
+ * it closes, not when somebody remembers to edit the marketing copy.
+ */
+export async function updateFacility(facilityId, changes) {
+  if (!USE_MOCK_API) {
+    return request(`/content/facilities/${facilityId}`, { method: "PATCH", body: changes });
+  }
+
+  await delay(700);
+  const facility = facilities.find((item) => item.id === facilityId);
+  if (!facility) throw new Error("We couldn't find that facility.");
+
+  Object.assign(facility, changes);
+  return clone(facility);
+}
+
+/** Adds a facility. */
+export async function createFacility(payload) {
+  if (!USE_MOCK_API) return request("/content/facilities", { method: "POST", body: payload });
+
+  await delay(800);
+
+  if (!payload.name?.trim()) throw new Error("A facility needs a name.");
+
+  const created = {
+    id: `fc-${payload.name.trim().toLowerCase().replace(/\W+/g, "-").slice(0, 20)}`,
+    name: payload.name.trim(),
+    icon: payload.icon || "bi-building",
+    summary: payload.summary ?? "",
+    image: payload.image ?? "",
+    hours: payload.hours ?? "",
+    status: payload.status ?? FACILITY_STATUS.OPEN,
+    capacity: Number(payload.capacity) || 0,
+    department: payload.department ?? "",
+  };
+
+  facilities.push(created);
+  return clone(created);
+}
+
 export async function getExperiences() {
   if (!USE_MOCK_API) return request("/content/experiences");
 

@@ -30,6 +30,9 @@ export const HOTEL = {
 export const facilities = [
   {
     id: "fc-pool",
+    status: "OPEN",
+    capacity: 60,
+    department: "Recreation",
     name: "Infinity Pool",
     icon: "bi-water",
     summary: "A 30-metre horizon pool that reads as an extension of the bay.",
@@ -38,6 +41,9 @@ export const facilities = [
   },
   {
     id: "fc-spa",
+    status: "OPEN",
+    capacity: 12,
+    department: "Wellness",
     name: "Coastal Spa",
     icon: "bi-flower1",
     summary: "Ayurvedic and contemporary treatments in six garden pavilions.",
@@ -46,6 +52,9 @@ export const facilities = [
   },
   {
     id: "fc-dining",
+    status: "OPEN",
+    capacity: 120,
+    department: "Food & Beverage",
     name: "Horizon Restaurant",
     icon: "bi-egg-fried",
     summary: "Seafood landed that morning, served on a terrace above the water.",
@@ -54,6 +63,9 @@ export const facilities = [
   },
   {
     id: "fc-gym",
+    status: "OPEN",
+    capacity: 20,
+    department: "Recreation",
     name: "Fitness Studio",
     icon: "bi-heart-pulse",
     summary: "Technogym equipment, free weights and daily sunrise yoga.",
@@ -62,6 +74,9 @@ export const facilities = [
   },
   {
     id: "fc-events",
+    status: "MAINTENANCE",
+    capacity: 180,
+    department: "Events",
     name: "Events & Meetings",
     icon: "bi-people",
     summary: "Three flexible spaces seating up to 180, with a dedicated planner.",
@@ -70,6 +85,9 @@ export const facilities = [
   },
   {
     id: "fc-concierge",
+    status: "OPEN",
+    capacity: 0,
+    department: "Front Office",
     name: "Concierge Desk",
     icon: "bi-bell",
     summary: "Transfers, excursions and reservations, handled before you ask.",

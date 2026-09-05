@@ -1,11 +1,11 @@
-import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+import { Suspense, lazy } from "react";
+import { BrowserRouter, Navigate, Outlet, Route, Routes } from "react-router-dom";
 import AuthProvider from "./context/AuthProvider";
 import ToastProvider from "./context/ToastProvider";
 import DashboardLayout from "./components/layout/DashboardLayout";
 import PublicLayout from "./components/layout/PublicLayout";
 import ProtectedRoute from "./components/ProtectedRoute";
 import ComingSoon from "./pages/ComingSoon";
-import Dashboard from "./pages/Dashboard";
 import BookingDetails from "./pages/guest/BookingDetails";
 import Feedback from "./pages/guest/Feedback";
 import GuestDashboard from "./pages/guest/GuestDashboard";
@@ -48,6 +48,34 @@ import Rooms from "./pages/public/Rooms";
 import Testimonials from "./pages/public/Testimonials";
 import { ROLES } from "./services/authService";
 
+/*
+ * Admin is loaded on demand. It is the only area that pulls in Recharts, and a
+ * guest browsing the public site should never download a charting library to
+ * look at a room. React's own code splitting — no extra dependency.
+ */
+const AdminDashboard = lazy(() => import("./pages/admin/AdminDashboard"));
+const AdminUsers = lazy(() => import("./pages/admin/Users"));
+const AdminRoles = lazy(() => import("./pages/admin/RolesPermissions"));
+const AdminRooms = lazy(() => import("./pages/admin/Rooms"));
+const AdminFacilities = lazy(() => import("./pages/admin/Facilities"));
+const AdminStaff = lazy(() => import("./pages/admin/Staff"));
+const AdminReservations = lazy(() => import("./pages/admin/Reservations"));
+const AdminPayments = lazy(() => import("./pages/admin/Payments"));
+const AdminReports = lazy(() => import("./pages/admin/Reports"));
+const AdminNotifications = lazy(() => import("./pages/admin/Notifications"));
+const AdminAuditLogs = lazy(() => import("./pages/admin/AuditLogs"));
+const AdminSettings = lazy(() => import("./pages/admin/Settings"));
+
+/** Shown while an admin chunk downloads. Matches the skeletons used elsewhere. */
+function RouteFallback() {
+  return (
+    <div className="shms-route-loading" aria-hidden="true">
+      <div className="shms-skeleton" style={{ height: 96 }} />
+      <div className="shms-skeleton" style={{ height: 280 }} />
+    </div>
+  );
+}
+
 /**
  * Route table.
  *
@@ -58,12 +86,6 @@ import { ROLES } from "./services/authService";
  * decides the destination (ROLE_ROUTES in authService.js) and ProtectedRoute
  * keeps each dashboard restricted to its role.
  */
-
-/**
- * Staff roles still on the shared placeholder. The guest portal has its own
- * nested routes below; phases 7–10 replace these one role at a time.
- */
-const ROLE_DASHBOARDS = [{ path: "/admin/dashboard", role: ROLES.ADMIN }];
 
 function App() {
   return (
@@ -178,18 +200,40 @@ function App() {
           <Route path="maintenance" element={<ServiceMaintenance />} />
         </Route>
 
-        {/* --------------------------------------------- Role dashboards */}
-        {ROLE_DASHBOARDS.map(({ path, role }) => (
+        {/* ------------------------------------------------ Administrator */}
+        <Route
+          path="/admin"
+          element={
+            <ProtectedRoute allow={[ROLES.ADMIN]}>
+              <DashboardLayout />
+            </ProtectedRoute>
+          }
+        >
           <Route
-            key={path}
-            path={path}
             element={
-              <ProtectedRoute allow={[role]}>
-                <Dashboard role={role} />
-              </ProtectedRoute>
+              <Suspense fallback={<RouteFallback />}>
+                <Outlet />
+              </Suspense>
             }
-          />
-        ))}
+          >
+            <Route index element={<AdminDashboard />} />
+            <Route path="users" element={<AdminUsers />} />
+            <Route path="roles" element={<AdminRoles />} />
+            <Route path="rooms" element={<AdminRooms />} />
+            <Route path="facilities" element={<AdminFacilities />} />
+            <Route path="staff" element={<AdminStaff />} />
+            <Route path="reservations" element={<AdminReservations />} />
+            <Route path="payments" element={<AdminPayments />} />
+            <Route path="reports" element={<AdminReports />} />
+            <Route path="notifications" element={<AdminNotifications />} />
+            <Route path="audit-logs" element={<AdminAuditLogs />} />
+            <Route path="settings" element={<AdminSettings />} />
+          </Route>
+        </Route>
+
+        {/* The old per-role placeholder path, kept as a redirect so any saved
+            link still lands somewhere sensible. */}
+        <Route path="/admin/dashboard" element={<Navigate to="/admin" replace />} />
 
         {/* ------------------------------------------------------ Fallbacks */}
         <Route
