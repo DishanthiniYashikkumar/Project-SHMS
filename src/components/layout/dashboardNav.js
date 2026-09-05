@@ -203,17 +203,75 @@ const HOUSEKEEPING_NAV = {
 };
 
 /* -------------------------------------------------------------------------- */
+/* Service staff                                                              */
+/* -------------------------------------------------------------------------- */
+
+const SERVICE_NAV = {
+  notificationsPath: null,
+  profilePath: null,
+  sections: [
+    {
+      legend: "Queue",
+      items: [
+        {
+          to: "/service/dashboard",
+          label: "Dashboard",
+          icon: "bi-speedometer2",
+          subtitle: "Your work and what's waiting",
+          end: true,
+        },
+        {
+          to: "/service/requests",
+          label: "Guest Requests",
+          icon: "bi-bell",
+          subtitle: "Every request, whatever the type",
+        },
+      ],
+    },
+    {
+      legend: "By type",
+      items: [
+        {
+          to: "/service/room-service",
+          label: "Room Service",
+          icon: "bi-cup-hot",
+          subtitle: "Food and drink to a room",
+        },
+        {
+          to: "/service/dining",
+          label: "Dining",
+          icon: "bi-egg-fried",
+          subtitle: "Restaurant bookings and dietary needs",
+        },
+        {
+          to: "/service/transport",
+          label: "Transport",
+          icon: "bi-car-front",
+          subtitle: "Transfers, excursions and pickups",
+        },
+        {
+          to: "/service/maintenance",
+          label: "Maintenance",
+          icon: "bi-tools",
+          subtitle: "Faults reported from the floor",
+        },
+      ],
+    },
+  ],
+};
+
+/* -------------------------------------------------------------------------- */
 /* Registry                                                                   */
 /* -------------------------------------------------------------------------- */
 
 const EMPTY_NAV = { notificationsPath: null, profilePath: null, sections: [] };
 
-/** Service and admin land in phases 9-10. */
+/** Admin lands in phase 10. */
 export const NAV_BY_ROLE = {
   [ROLES.GUEST]: GUEST_NAV,
   [ROLES.RECEPTIONIST]: RECEPTION_NAV,
   [ROLES.HOUSEKEEPING]: HOUSEKEEPING_NAV,
-  [ROLES.SERVICE_STAFF]: EMPTY_NAV,
+  [ROLES.SERVICE_STAFF]: SERVICE_NAV,
   [ROLES.ADMIN]: EMPTY_NAV,
 };
 
