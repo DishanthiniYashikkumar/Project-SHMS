@@ -66,6 +66,18 @@ const USER = {
   SUSPENDED: { label: "Suspended", tone: TONES.DANGER },
 };
 
+const FACILITY = {
+  OPEN: { label: "Open", tone: TONES.SUCCESS },
+  CLOSED: { label: "Closed", tone: TONES.NEUTRAL },
+  MAINTENANCE: { label: "Maintenance", tone: TONES.DANGER },
+};
+
+/** Audit outcomes. A failed action is worth spotting in a long list. */
+const AUDIT = {
+  SUCCESS: { label: "Success", tone: TONES.SUCCESS },
+  FAILURE: { label: "Failed", tone: TONES.DANGER },
+};
+
 const DOMAINS = {
   booking: BOOKING,
   payment: PAYMENT,
@@ -73,6 +85,8 @@ const DOMAINS = {
   request: REQUEST,
   priority: PRIORITY,
   user: USER,
+  facility: FACILITY,
+  audit: AUDIT,
 };
 
 /** Turns SOME_STATUS into "Some Status" for anything not in the maps. */

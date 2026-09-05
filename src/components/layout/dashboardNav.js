@@ -261,18 +261,122 @@ const SERVICE_NAV = {
 };
 
 /* -------------------------------------------------------------------------- */
+/* Administrator                                                              */
+/* -------------------------------------------------------------------------- */
+
+const ADMIN_NAV = {
+  notificationsPath: "/admin/notifications",
+  profilePath: null,
+  sections: [
+    {
+      legend: "Overview",
+      items: [
+        {
+          to: "/admin",
+          label: "Dashboard",
+          icon: "bi-speedometer2",
+          subtitle: "Occupancy, revenue and what needs attention",
+          end: true,
+        },
+        {
+          to: "/admin/reports",
+          label: "Reports",
+          icon: "bi-graph-up",
+          subtitle: "Occupancy, revenue, reservations and requests",
+        },
+      ],
+    },
+    {
+      legend: "Operations",
+      items: [
+        {
+          to: "/admin/reservations",
+          label: "Reservations",
+          icon: "bi-journal-text",
+          subtitle: "Every booking on record",
+        },
+        {
+          to: "/admin/rooms",
+          label: "Rooms",
+          icon: "bi-door-open",
+          subtitle: "Inventory, rates and status",
+        },
+        {
+          to: "/admin/facilities",
+          label: "Facilities",
+          icon: "bi-buildings",
+          subtitle: "What's open and who runs it",
+        },
+        {
+          to: "/admin/payments",
+          label: "Payments",
+          icon: "bi-credit-card",
+          subtitle: "Invoices and outstanding balances",
+        },
+      ],
+    },
+    {
+      legend: "People",
+      items: [
+        {
+          to: "/admin/users",
+          label: "Users",
+          icon: "bi-people",
+          subtitle: "Every account on the system",
+        },
+        {
+          to: "/admin/staff",
+          label: "Staff",
+          icon: "bi-person-badge",
+          subtitle: "Directory, departments and workload",
+        },
+        {
+          to: "/admin/roles",
+          label: "Roles & Permissions",
+          icon: "bi-shield-lock",
+          subtitle: "What each role is allowed to do",
+        },
+      ],
+    },
+    {
+      legend: "System",
+      items: [
+        {
+          to: "/admin/notifications",
+          label: "Notifications",
+          icon: "bi-inbox",
+          subtitle: "Everything the system has sent",
+        },
+        {
+          to: "/admin/audit-logs",
+          label: "Audit Logs",
+          icon: "bi-clock-history",
+          subtitle: "Read-only record of every action",
+        },
+        {
+          to: "/admin/settings",
+          label: "Settings",
+          icon: "bi-gear",
+          subtitle: "Hotel details, policy and notifications",
+        },
+      ],
+    },
+  ],
+};
+
+/* -------------------------------------------------------------------------- */
 /* Registry                                                                   */
 /* -------------------------------------------------------------------------- */
 
+/** Fallback for a role with no navigation of its own. */
 const EMPTY_NAV = { notificationsPath: null, profilePath: null, sections: [] };
 
-/** Admin lands in phase 10. */
 export const NAV_BY_ROLE = {
   [ROLES.GUEST]: GUEST_NAV,
   [ROLES.RECEPTIONIST]: RECEPTION_NAV,
   [ROLES.HOUSEKEEPING]: HOUSEKEEPING_NAV,
   [ROLES.SERVICE_STAFF]: SERVICE_NAV,
-  [ROLES.ADMIN]: EMPTY_NAV,
+  [ROLES.ADMIN]: ADMIN_NAV,
 };
 
 function navFor(role) {

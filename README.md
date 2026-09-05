@@ -155,7 +155,7 @@ dashboard via `ROLE_ROUTES` in `services/authService.js`.
 | 7 | Receptionist dashboard | Done |
 | 8 | Housekeeping dashboard | Done |
 | 9 | Service staff dashboard | Done |
-| 10 | Admin dashboard | Next |
+| 10 | Admin dashboard, 12 modules, analytics | Done |
 | 11–13 | Responsive sweep, accessibility polish, flow testing | |
 
 Responsive layout and accessibility are exit criteria for every phase, not
