@@ -22,39 +22,17 @@ const USER_KEY = "shms.auth.user";
 /* -------------------------------------------------------------------------- */
 /* Roles + RBAC routing                                                       */
 /* -------------------------------------------------------------------------- */
-
-export const ROLES = {
-  GUEST: "GUEST",
-  RECEPTIONIST: "RECEPTIONIST",
-  HOUSEKEEPING: "HOUSEKEEPING",
-  SERVICE_STAFF: "SERVICE_STAFF",
-  ADMIN: "ADMIN",
-};
-
-/**
- * Single source of truth for "which dashboard does this role get?".
- * There is ONE login page -- the role returned by the backend picks the route.
+/*
+ * Defined in roles.js and re-exported here, so that everything importing them
+ * from this module keeps working while fixtures can reach the constants
+ * without depending on auth.
  */
-export const ROLE_ROUTES = {
-  [ROLES.GUEST]: "/guest/dashboard",
-  [ROLES.RECEPTIONIST]: "/reception/dashboard",
-  [ROLES.HOUSEKEEPING]: "/housekeeping/dashboard",
-  [ROLES.SERVICE_STAFF]: "/service/dashboard",
-  [ROLES.ADMIN]: "/admin/dashboard",
-};
 
-export const ROLE_LABELS = {
-  [ROLES.GUEST]: "Guest",
-  [ROLES.RECEPTIONIST]: "Receptionist",
-  [ROLES.HOUSEKEEPING]: "Housekeeping",
-  [ROLES.SERVICE_STAFF]: "Service Staff",
-  [ROLES.ADMIN]: "Administrator",
-};
+export { ROLES, ROLE_ROUTES, ROLE_LABELS, getDashboardRoute } from "./roles";
 
-/** Maps a role coming off the API to its dashboard path. */
-export function getDashboardRoute(role) {
-  return ROLE_ROUTES[String(role ?? "").toUpperCase()] ?? "/unauthorized";
-}
+// A re-export creates no local binding, and the mock helpers below use these.
+import { ROLES } from "./roles";
+import { users as mockUsers } from "./mock/users";
 
 /* -------------------------------------------------------------------------- */
 /* Session storage                                                            */
@@ -191,19 +169,156 @@ async function requestLogin({ email, password }) {
 }
 
 /* -------------------------------------------------------------------------- */
+/* Registration                                                               */
+/* -------------------------------------------------------------------------- */
+
+/**
+ * Creates a guest account and signs the new user in.
+ *
+ * Only guests can self-register. Staff accounts are created by an
+ * administrator, so `role` is never accepted from the client — the backend
+ * must assign GUEST regardless of what is posted.
+ *
+ * @param {{ firstName, lastName, email, phone, password }} details
+ * @returns {Promise<{ token: string, user: object }>}
+ * @throws {AuthError}
+ */
+export async function register(details) {
+  const session = USE_MOCK_AUTH ? await mockRegister(details) : await requestRegister(details);
+
+  saveSession(session, false);
+  return session;
+}
+
+async function requestRegister({ firstName, lastName, email, phone, password }) {
+  let response;
+  try {
+    response = await fetch(`${API_BASE_URL}/auth/register`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Accept: "application/json" },
+      body: JSON.stringify({
+        firstName: firstName.trim(),
+        lastName: lastName.trim(),
+        email: email.trim().toLowerCase(),
+        phone: phone.trim(),
+        password,
+      }),
+    });
+  } catch {
+    throw new AuthError("Unable to reach the server. Check your connection and try again.", 0);
+  }
+
+  const payload = await response.json().catch(() => ({}));
+
+  if (!response.ok) {
+    if (response.status === 409) {
+      throw new AuthError(
+        payload.message ?? "An account with that email already exists. Try signing in instead.",
+        409,
+      );
+    }
+    throw new AuthError(messageForStatus(response.status, payload.message), response.status);
+  }
+  if (!payload.token || !payload.user?.role) {
+    throw new AuthError("The server returned an unexpected response.", response.status);
+  }
+
+  return {
+    token: payload.token,
+    user: {
+      id: payload.user.id,
+      name: payload.user.name,
+      email: payload.user.email,
+      role: String(payload.user.role).toUpperCase(),
+    },
+  };
+}
+
+/* -------------------------------------------------------------------------- */
+/* Password recovery                                                          */
+/* -------------------------------------------------------------------------- */
+
+/**
+ * Requests a password reset link.
+ *
+ * Always resolves, even for an unknown address — revealing which emails have
+ * accounts would let anyone enumerate the user list. The UI shows the same
+ * confirmation either way.
+ */
+export async function requestPasswordReset(email) {
+  if (USE_MOCK_AUTH) {
+    await new Promise((resolve) => setTimeout(resolve, 900));
+    return { sent: true };
+  }
+
+  try {
+    await fetch(`${API_BASE_URL}/auth/forgot-password`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Accept: "application/json" },
+      body: JSON.stringify({ email: email.trim().toLowerCase() }),
+    });
+  } catch {
+    throw new AuthError("Unable to reach the server. Check your connection and try again.", 0);
+  }
+
+  return { sent: true };
+}
+
+/**
+ * Completes a password reset using the token from the emailed link.
+ * @param {{ token: string, password: string }} payload
+ */
+export async function resetPassword({ token, password }) {
+  if (USE_MOCK_AUTH) {
+    await new Promise((resolve) => setTimeout(resolve, 900));
+    if (!token) throw new AuthError("That reset link is invalid or has expired.", 400);
+    return { reset: true };
+  }
+
+  let response;
+  try {
+    response = await fetch(`${API_BASE_URL}/auth/reset-password`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Accept: "application/json" },
+      body: JSON.stringify({ token, password }),
+    });
+  } catch {
+    throw new AuthError("Unable to reach the server. Check your connection and try again.", 0);
+  }
+
+  if (!response.ok) {
+    const payload = await response.json().catch(() => ({}));
+    if (response.status === 400 || response.status === 410) {
+      throw new AuthError(
+        payload.message ?? "That reset link is invalid or has expired. Please request a new one.",
+        response.status,
+      );
+    }
+    throw new AuthError(messageForStatus(response.status, payload.message), response.status);
+  }
+
+  return { reset: true };
+}
+
+/* -------------------------------------------------------------------------- */
 /* Mock backend (development only)                                            */
 /* -------------------------------------------------------------------------- */
 /*
- * No credentials are hardcoded. The mock derives a role from the local part of
- * the email so every role is reachable while the real API is being built:
+ * No credentials are hardcoded and no password is ever checked against a
+ * stored value -- any password of 8+ characters is accepted, shorter ones
+ * simulate a 401.
  *
- *   admin@shms.com         -> Administrator
- *   reception@shms.com     -> Receptionist
- *   housekeeping@shms.com  -> Housekeeping
- *   service@shms.com       -> Service Staff
- *   anything else          -> Guest
+ * Signing in with a fixture address returns that fixture user, so the portal
+ * has real bookings, notifications and invoices behind it:
  *
- * Any password of 8+ characters is accepted; shorter ones simulate a 401.
+ *   amara.perera@example.com   -> Guest          (usr-guest-01)
+ *   reception@oceanstays.com   -> Receptionist   (usr-recep-01)
+ *   housekeeping@oceanstays.com-> Housekeeping   (usr-hk-01)
+ *   service@oceanstays.com     -> Service Staff  (usr-service-01)
+ *   admin@oceanstays.com       -> Administrator  (usr-admin-01)
+ *
+ * Any other address falls back to a role derived from its local part, so every
+ * role stays reachable -- that account simply has no data behind it.
  */
 
 const MOCK_ROLE_HINTS = [
@@ -227,6 +342,30 @@ async function mockLogin({ email, password }) {
   }
 
   const normalised = email.trim().toLowerCase();
+
+  /*
+   * Prefer a real fixture user. Bookings, notifications and invoices are keyed
+   * to fixture ids like `usr-guest-01`, so signing in with a derived id would
+   * leave every portal page showing its empty state.
+   */
+  const known = mockUsers.find((candidate) => candidate.email.toLowerCase() === normalised);
+
+  if (known) {
+    return {
+      token: `mock.${btoa(`${normalised}:${known.role}`)}.token`,
+      user: {
+        id: known.id,
+        name: known.name,
+        email: known.email,
+        phone: known.phone,
+        role: known.role,
+      },
+    };
+  }
+
+  // Unknown address: derive an identity so every role stays reachable. This
+  // account has no fixture data behind it, which is what a new sign-up looks
+  // like anyway.
   const role = mockRoleFor(normalised);
   const localPart = normalised.split("@")[0] ?? "user";
 
@@ -237,6 +376,39 @@ async function mockLogin({ email, password }) {
       name: localPart.replace(/[._-]+/g, " ").replace(/\b\w/g, (c) => c.toUpperCase()),
       email: normalised,
       role,
+    },
+  };
+}
+
+/** Addresses the mock treats as already registered, to exercise the 409 path. */
+const MOCK_TAKEN_EMAILS = ["admin@oceanstays.com", "reception@oceanstays.com"];
+
+async function mockRegister({ firstName, lastName, email, phone, password }) {
+  await new Promise((resolve) => setTimeout(resolve, 1100));
+
+  const normalised = email.trim().toLowerCase();
+
+  if (MOCK_TAKEN_EMAILS.includes(normalised)) {
+    throw new AuthError(
+      "An account with that email already exists. Try signing in instead.",
+      409,
+    );
+  }
+  if (password.length < 8) {
+    throw new AuthError("Please choose a password of at least 8 characters.", 400);
+  }
+
+  const name = `${firstName.trim()} ${lastName.trim()}`.trim();
+
+  return {
+    // Self-registration always produces a GUEST — never a staff role.
+    token: `mock.${btoa(`${normalised}:${ROLES.GUEST}`)}.token`,
+    user: {
+      id: `mock-${normalised.split("@")[0]}`,
+      name,
+      email: normalised,
+      phone: phone.trim(),
+      role: ROLES.GUEST,
     },
   };
 }
