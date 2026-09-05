@@ -14,6 +14,12 @@ import Notifications from "./pages/guest/Notifications";
 import Payments from "./pages/guest/Payments";
 import Profile from "./pages/guest/Profile";
 import ServiceRequests from "./pages/guest/ServiceRequests";
+import DiningRequests from "./pages/service/DiningRequests";
+import GuestRequests from "./pages/service/GuestRequests";
+import ServiceMaintenance from "./pages/service/MaintenanceRequests";
+import RoomService from "./pages/service/RoomService";
+import ServiceDashboard from "./pages/service/ServiceDashboard";
+import TransportRequests from "./pages/service/TransportRequests";
 import AssignedRooms from "./pages/housekeeping/AssignedRooms";
 import CleaningTasks from "./pages/housekeeping/CleaningTasks";
 import HousekeepingDashboard from "./pages/housekeeping/HousekeepingDashboard";
@@ -57,10 +63,7 @@ import { ROLES } from "./services/authService";
  * Staff roles still on the shared placeholder. The guest portal has its own
  * nested routes below; phases 7–10 replace these one role at a time.
  */
-const ROLE_DASHBOARDS = [
-  { path: "/service/dashboard", role: ROLES.SERVICE_STAFF },
-  { path: "/admin/dashboard", role: ROLES.ADMIN },
-];
+const ROLE_DASHBOARDS = [{ path: "/admin/dashboard", role: ROLES.ADMIN }];
 
 function App() {
   return (
@@ -155,6 +158,24 @@ function App() {
           <Route path="rooms" element={<AssignedRooms />} />
           <Route path="requests" element={<HousekeepingRequests />} />
           <Route path="maintenance" element={<MaintenanceIssues />} />
+        </Route>
+
+        {/* ------------------------------------------- Service staff */}
+        <Route
+          path="/service"
+          element={
+            <ProtectedRoute allow={[ROLES.SERVICE_STAFF]}>
+              <DashboardLayout />
+            </ProtectedRoute>
+          }
+        >
+          <Route index element={<Navigate to="/service/dashboard" replace />} />
+          <Route path="dashboard" element={<ServiceDashboard />} />
+          <Route path="requests" element={<GuestRequests />} />
+          <Route path="room-service" element={<RoomService />} />
+          <Route path="dining" element={<DiningRequests />} />
+          <Route path="transport" element={<TransportRequests />} />
+          <Route path="maintenance" element={<ServiceMaintenance />} />
         </Route>
 
         {/* --------------------------------------------- Role dashboards */}
