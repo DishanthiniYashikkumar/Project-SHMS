@@ -36,9 +36,12 @@ const PAYMENT = {
 const ROOM = {
   AVAILABLE: { label: "Available", tone: TONES.SUCCESS },
   READY: { label: "Ready", tone: TONES.SUCCESS },
+  INSPECTED: { label: "Inspected", tone: TONES.SUCCESS },
+  CLEAN: { label: "Clean", tone: TONES.INFO },
   RESERVED: { label: "Reserved", tone: TONES.INFO },
   OCCUPIED: { label: "Occupied", tone: TONES.GOLD },
   CLEANING: { label: "Cleaning", tone: TONES.WARNING },
+  DIRTY: { label: "Dirty", tone: TONES.WARNING },
   MAINTENANCE: { label: "Maintenance", tone: TONES.DANGER },
 };
 

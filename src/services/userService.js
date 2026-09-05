@@ -12,7 +12,7 @@ import { USE_MOCK_API, clone, delay, paginate, request } from "./apiClient";
 import { ROLES, ROLE_LABELS } from "./authService";
 import { users } from "./mock/users";
 import { bookings, BOOKING_STATUS, PAYMENT_STATUS } from "./mock/bookings";
-import { rooms, ROOM_STATUS } from "./mock/rooms";
+import { rooms, ROOM_STATUS, SELLABLE_STATUSES } from "./mock/rooms";
 import { serviceRequests, REQUEST_STATUS } from "./mock/requests";
 
 export { ROLES, ROLE_LABELS };
@@ -117,7 +117,7 @@ export async function getDashboardStats() {
   return {
     totalRooms: rooms.length,
     availableRooms: rooms.filter((r) =>
-      [ROOM_STATUS.AVAILABLE, ROOM_STATUS.READY].includes(r.status),
+      SELLABLE_STATUSES.includes(r.status),
     ).length,
     occupiedRooms: rooms.filter((r) => r.status === ROOM_STATUS.OCCUPIED).length,
     cleaningRooms: rooms.filter((r) => r.status === ROOM_STATUS.CLEANING).length,

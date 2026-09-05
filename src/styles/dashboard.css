@@ -898,7 +898,8 @@
 }
 
 .shms-room-tile.is-AVAILABLE,
-.shms-room-tile.is-READY {
+.shms-room-tile.is-READY,
+.shms-room-tile.is-INSPECTED {
   border-left-color: var(--success);
 }
 
@@ -906,10 +907,12 @@
   border-left-color: var(--gold-500);
 }
 
-.shms-room-tile.is-RESERVED {
+.shms-room-tile.is-RESERVED,
+.shms-room-tile.is-CLEAN {
   border-left-color: var(--navy-500);
 }
 
+.shms-room-tile.is-DIRTY,
 .shms-room-tile.is-CLEANING {
   border-left-color: var(--warning);
 }

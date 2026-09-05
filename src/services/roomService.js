@@ -13,6 +13,7 @@ import { ROOM_STATUS, rooms, roomTypes } from "./mock/rooms";
 import { bookings, BOOKING_STATUS } from "./mock/bookings";
 
 export { ROOM_STATUS };
+export { SELLABLE_STATUSES } from "./mock/rooms";
 export { AMENITIES, BED_TYPES } from "./mock/rooms";
 
 /** Bookings that actually hold inventory. Cancelled ones free the room up. */

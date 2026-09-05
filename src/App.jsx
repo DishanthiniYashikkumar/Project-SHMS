@@ -14,6 +14,11 @@ import Notifications from "./pages/guest/Notifications";
 import Payments from "./pages/guest/Payments";
 import Profile from "./pages/guest/Profile";
 import ServiceRequests from "./pages/guest/ServiceRequests";
+import AssignedRooms from "./pages/housekeeping/AssignedRooms";
+import CleaningTasks from "./pages/housekeeping/CleaningTasks";
+import HousekeepingDashboard from "./pages/housekeeping/HousekeepingDashboard";
+import HousekeepingRequests from "./pages/housekeeping/HousekeepingRequests";
+import MaintenanceIssues from "./pages/housekeeping/MaintenanceIssues";
 import CheckIn from "./pages/reception/CheckIn";
 import CheckOut from "./pages/reception/CheckOut";
 import Guests from "./pages/reception/Guests";
@@ -53,7 +58,6 @@ import { ROLES } from "./services/authService";
  * nested routes below; phases 7–10 replace these one role at a time.
  */
 const ROLE_DASHBOARDS = [
-  { path: "/housekeeping/dashboard", role: ROLES.HOUSEKEEPING },
   { path: "/service/dashboard", role: ROLES.SERVICE_STAFF },
   { path: "/admin/dashboard", role: ROLES.ADMIN },
 ];
@@ -134,6 +138,23 @@ function App() {
           <Route path="guests" element={<Guests />} />
           <Route path="payments" element={<ReceptionPayments />} />
           <Route path="requests" element={<ReceptionRequests />} />
+        </Route>
+
+        {/* -------------------------------------------- Housekeeping */}
+        <Route
+          path="/housekeeping"
+          element={
+            <ProtectedRoute allow={[ROLES.HOUSEKEEPING]}>
+              <DashboardLayout />
+            </ProtectedRoute>
+          }
+        >
+          <Route index element={<Navigate to="/housekeeping/dashboard" replace />} />
+          <Route path="dashboard" element={<HousekeepingDashboard />} />
+          <Route path="tasks" element={<CleaningTasks />} />
+          <Route path="rooms" element={<AssignedRooms />} />
+          <Route path="requests" element={<HousekeepingRequests />} />
+          <Route path="maintenance" element={<MaintenanceIssues />} />
         </Route>
 
         {/* --------------------------------------------- Role dashboards */}

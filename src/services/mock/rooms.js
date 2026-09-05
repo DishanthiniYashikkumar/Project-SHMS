@@ -6,14 +6,37 @@
  * substitution rather than a reshape.
  */
 
+/**
+ * Room states.
+ *
+ * The housekeeping turnaround is a chain, not a flag:
+ *
+ *   OCCUPIED -> (check-out) -> DIRTY -> CLEANING -> CLEAN -> INSPECTED -> sellable
+ *
+ * A room is only sellable once it has been inspected, which is why CLEAN and
+ * INSPECTED are separate: "the cleaner says it's done" and "a supervisor has
+ * confirmed it" are different claims, and only the second one should put a
+ * room back in front of a guest.
+ */
 export const ROOM_STATUS = {
   AVAILABLE: "AVAILABLE",
   RESERVED: "RESERVED",
   OCCUPIED: "OCCUPIED",
+  DIRTY: "DIRTY",
   CLEANING: "CLEANING",
+  CLEAN: "CLEAN",
+  INSPECTED: "INSPECTED",
   READY: "READY",
   MAINTENANCE: "MAINTENANCE",
 };
+
+/** States in which a room may be sold or allocated to an arriving guest. */
+export const SELLABLE_STATUSES = [
+  ROOM_STATUS.AVAILABLE,
+  ROOM_STATUS.READY,
+  ROOM_STATUS.INSPECTED,
+  ROOM_STATUS.RESERVED,
+];
 
 export const BED_TYPES = {
   KING: "King",
@@ -204,15 +227,15 @@ export const roomTypes = [
 /** Physical room inventory — what reception allocates and housekeeping services. */
 export const rooms = [
   { id: "rm-201", number: "201", floor: 2, roomTypeId: "rt-ocean-deluxe", status: ROOM_STATUS.OCCUPIED, housekeepingNote: "" },
-  { id: "rm-202", number: "202", floor: 2, roomTypeId: "rt-ocean-deluxe", status: ROOM_STATUS.READY, housekeepingNote: "" },
+  { id: "rm-202", number: "202", floor: 2, roomTypeId: "rt-ocean-deluxe", status: ROOM_STATUS.CLEAN, housekeepingNote: "" },
   { id: "rm-203", number: "203", floor: 2, roomTypeId: "rt-ocean-deluxe", status: ROOM_STATUS.CLEANING, housekeepingNote: "Late checkout, deep clean requested" },
   { id: "rm-204", number: "204", floor: 2, roomTypeId: "rt-harbour-twin", status: ROOM_STATUS.AVAILABLE, housekeepingNote: "" },
   { id: "rm-205", number: "205", floor: 2, roomTypeId: "rt-harbour-twin", status: ROOM_STATUS.MAINTENANCE, housekeepingNote: "Air conditioning unit replacement" },
   { id: "rm-301", number: "301", floor: 3, roomTypeId: "rt-coastal-suite", status: ROOM_STATUS.OCCUPIED, housekeepingNote: "" },
   { id: "rm-302", number: "302", floor: 3, roomTypeId: "rt-coastal-suite", status: ROOM_STATUS.RESERVED, housekeepingNote: "" },
   { id: "rm-303", number: "303", floor: 3, roomTypeId: "rt-lagoon-double", status: ROOM_STATUS.READY, housekeepingNote: "" },
-  { id: "rm-304", number: "304", floor: 3, roomTypeId: "rt-lagoon-double", status: ROOM_STATUS.CLEANING, housekeepingNote: "" },
+  { id: "rm-304", number: "304", floor: 3, roomTypeId: "rt-lagoon-double", status: ROOM_STATUS.DIRTY, housekeepingNote: "" },
   { id: "rm-401", number: "401", floor: 4, roomTypeId: "rt-sunset-penthouse", status: ROOM_STATUS.OCCUPIED, housekeepingNote: "" },
   { id: "vl-01", number: "V1", floor: 0, roomTypeId: "rt-garden-villa", status: ROOM_STATUS.OCCUPIED, housekeepingNote: "" },
-  { id: "vl-02", number: "V2", floor: 0, roomTypeId: "rt-garden-villa", status: ROOM_STATUS.READY, housekeepingNote: "" },
+  { id: "vl-02", number: "V2", floor: 0, roomTypeId: "rt-garden-villa", status: ROOM_STATUS.CLEAN, housekeepingNote: "Awaiting inspection before 15:00 arrival" },
 ];
