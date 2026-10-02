@@ -16,12 +16,16 @@ const LOCALE = "en-GB";
 export function formatCurrency(amount, currency = "LKR", { compact = false } = {}) {
   if (amount == null || Number.isNaN(amount)) return "—";
 
-  return new Intl.NumberFormat(LOCALE, {
+  const formatted = new Intl.NumberFormat(LOCALE, {
     style: "currency",
     currency,
     maximumFractionDigits: 0,
     ...(compact ? { notation: "compact", maximumFractionDigits: 1 } : {}),
   }).format(amount);
+
+  // en-GB writes thousands as a lowercase "k" beside an uppercase "M"/"B";
+  // uppercase it so "LKR 567.8K" reads consistently with "LKR 1.2M".
+  return compact ? formatted.toUpperCase() : formatted;
 }
 
 /** "12 Sep 2025" */
@@ -95,6 +99,17 @@ export function formatRelative(value) {
     }
   }
   return formatter.format(seconds, "second");
+}
+
+/**
+ * "Good morning" / "Good afternoon" / "Good evening" from the browser's local
+ * clock: morning 05:00–11:59, afternoon 12:00–16:59, evening otherwise.
+ */
+export function getGreeting(date = new Date()) {
+  const hour = date.getHours();
+  if (hour >= 5 && hour < 12) return "Good morning";
+  if (hour >= 12 && hour < 17) return "Good afternoon";
+  return "Good evening";
 }
 
 /** "AP" from "Amara Perera" — for avatar fallbacks. */

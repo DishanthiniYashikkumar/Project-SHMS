@@ -508,6 +508,30 @@
   overflow-wrap: anywhere;
 }
 
+/* KPI figures: the sans face with tabular digits, so 3 / 33% / LKR 567.8K
+   read as data rather than display type and line up card to card. */
+.shms-stat-value.shms-kpi-value {
+  --kpi-size: 1.6rem;
+  font-family: var(--sans);
+  font-size: var(--kpi-size);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+}
+
+/* Currency never wraps: the copy column becomes a size container and the
+   figure shrinks with it instead of breaking "LKR 567.8K" across lines. */
+.shms-stat-copy:has(> .shms-revenue-value) {
+  flex: 1;
+  container-type: inline-size;
+}
+
+.shms-stat-value.shms-revenue-value {
+  font-size: min(var(--kpi-size), 15cqi);
+  white-space: nowrap;
+  overflow-wrap: normal;
+}
+
 .shms-stat-label {
   display: block;
   margin-top: 2px;
@@ -710,6 +734,41 @@
   color: var(--ink);
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
+}
+
+/* Money: the sans face with tabular digits, "LKR" and the amount kept on one
+   line. Row amounts step up slightly; .shms-payment-total is the headline. */
+.shms-currency-value {
+  font-family: var(--sans);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+  white-space: nowrap;
+  overflow-wrap: normal;
+}
+
+.shms-row-amount.shms-currency-value {
+  font-size: 1rem;
+}
+
+.shms-defs dd.shms-currency-value {
+  font-size: 1rem;
+  overflow-wrap: normal;
+}
+
+.shms-stat-value.shms-payment-total {
+  font-size: 1.85rem;
+  line-height: 1.2;
+}
+
+/* Inside a stat card the headline shrinks with the card rather than wrap. */
+.shms-stat-copy:has(> .shms-payment-total) {
+  flex: 1;
+  container-type: inline-size;
+}
+
+.shms-stat-copy > .shms-stat-value.shms-payment-total {
+  font-size: min(1.85rem, 15cqi);
 }
 
 /* ==========================================================================
@@ -1007,5 +1066,9 @@
 
   .shms-stat-value {
     font-size: 1.45rem;
+  }
+
+  .shms-stat-value.shms-kpi-value {
+    --kpi-size: 1.4rem;
   }
 }

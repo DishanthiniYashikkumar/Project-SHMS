@@ -108,7 +108,7 @@ function GuestDashboard() {
             <i className="bi bi-calendar2-event" />
           </span>
           <span className="shms-stat-copy">
-            <span className="shms-stat-value">{bookings.data?.upcoming?.length ?? 0}</span>
+            <span className="shms-stat-value shms-kpi-value">{bookings.data?.upcoming?.length ?? 0}</span>
             <span className="shms-stat-label">Upcoming bookings</span>
           </span>
         </article>
@@ -118,7 +118,7 @@ function GuestDashboard() {
             <i className="bi bi-bell" />
           </span>
           <span className="shms-stat-copy">
-            <span className="shms-stat-value">{openRequests.length}</span>
+            <span className="shms-stat-value shms-kpi-value">{openRequests.length}</span>
             <span className="shms-stat-label">Open requests</span>
           </span>
         </article>
@@ -128,7 +128,9 @@ function GuestDashboard() {
             <i className="bi bi-wallet2" />
           </span>
           <span className="shms-stat-copy">
-            <span className="shms-stat-value">
+            <span
+              className={`shms-stat-value${balanceDue > 0 ? " shms-currency-value shms-payment-total" : ""}`}
+            >
               {balanceDue > 0 ? formatCurrency(balanceDue, "LKR", { compact: true }) : "Settled"}
             </span>
             <span className="shms-stat-label">
@@ -197,7 +199,7 @@ function GuestDashboard() {
                       </div>
                       <div>
                         <dt>Total</dt>
-                        <dd>{formatCurrency(stay.total, stay.currency)}</dd>
+                        <dd className="shms-currency-value">{formatCurrency(stay.total, stay.currency)}</dd>
                       </div>
                     </dl>
 
@@ -316,7 +318,10 @@ function GuestDashboard() {
               <PanelSkeleton rows={2} />
             ) : balanceDue > 0 ? (
               <div className="shms-panel-body">
-                <p className="shms-stat-value" style={{ marginBottom: "var(--space-2)" }}>
+                <p
+                  className="shms-stat-value shms-currency-value shms-payment-total"
+                  style={{ marginBottom: "var(--space-2)" }}
+                >
                   {formatCurrency(balanceDue)}
                 </p>
                 <p className="shms-row-meta" style={{ marginBottom: "var(--space-4)" }}>

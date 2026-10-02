@@ -85,7 +85,7 @@ function ReceptionDashboard() {
               <i className={`bi ${icon}`} />
             </span>
             <span className="shms-stat-copy">
-              <span className="shms-stat-value">{value}</span>
+              <span className="shms-stat-value shms-kpi-value">{value}</span>
               <span className="shms-stat-label">{label}</span>
             </span>
           </article>
@@ -188,7 +188,7 @@ function ReceptionDashboard() {
                         </p>
                       </div>
                       <div className="shms-row-aside">
-                        <span className="shms-row-amount">
+                        <span className="shms-row-amount shms-currency-value">
                           {formatCurrency(booking.total, booking.currency)}
                         </span>
                         <Link className="shms-btn shms-btn-outline shms-btn-sm" to="/reception/check-out">
@@ -248,7 +248,9 @@ function ReceptionDashboard() {
             ) : (
               <>
                 <div className="shms-panel-body" style={{ paddingBottom: 0 }}>
-                  <p className="shms-stat-value">{formatCurrency(owed)}</p>
+                  <p className="shms-stat-value shms-currency-value shms-payment-total">
+                    {formatCurrency(owed)}
+                  </p>
                   <p className="shms-row-meta">Outstanding across {unpaid.length} bookings</p>
                 </div>
                 <ul className="shms-rows">
@@ -262,7 +264,7 @@ function ReceptionDashboard() {
                           </p>
                         </div>
                         <div className="shms-row-aside">
-                          <span className="shms-row-amount">
+                          <span className="shms-row-amount shms-currency-value">
                             {formatCurrency(booking.total, booking.currency)}
                           </span>
                         </div>
