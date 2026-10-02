@@ -12,7 +12,7 @@ import { useAsync } from "../../hooks/useAsync";
 import { useAuth } from "../../hooks/useAuth";
 import { getDashboardStats, getDashboardTrends } from "../../services/userService";
 import { getAuditLogs } from "../../services/auditService";
-import { formatCurrency, formatRelative } from "../../utils/format";
+import { formatCurrency, formatRelative, getGreeting } from "../../utils/format";
 import "../../styles/dashboard.css";
 import "../../styles/admin.css";
 
@@ -52,6 +52,7 @@ function AdminDashboard() {
       tone: "shms-stat-icon-gold",
       value: s ? formatCurrency(s.revenue, s.currency, { compact: true }) : "—",
       label: "Revenue collected",
+      currency: true,
     },
   ];
 
@@ -85,7 +86,7 @@ function AdminDashboard() {
     <>
       <div style={{ marginBottom: "var(--space-6)" }}>
         <h2 className="shms-heading" style={{ fontSize: "1.7rem", marginBottom: "var(--space-2)" }}>
-          Good morning, {firstName}.
+          {getGreeting()}, {firstName}.
         </h2>
         <p className="shms-subheading" style={{ fontSize: "var(--text-base)" }}>
           {s
@@ -103,13 +104,15 @@ function AdminDashboard() {
         />
       ) : (
         <div className="shms-stats">
-          {tiles.map(({ icon, tone, value, label }) => (
+          {tiles.map(({ icon, tone, value, label, currency }) => (
             <article className="shms-stat" key={label}>
               <span className={`shms-stat-icon ${tone}`.trim()} aria-hidden="true">
                 <i className={`bi ${icon}`} />
               </span>
               <span className="shms-stat-copy">
-                <span className="shms-stat-value">
+                <span
+                  className={`shms-stat-value shms-kpi-value${currency ? " shms-revenue-value" : ""}`}
+                >
                   {stats.isLoading ? "—" : (value ?? 0)}
                 </span>
                 <span className="shms-stat-label">{label}</span>

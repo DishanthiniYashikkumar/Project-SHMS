@@ -8,7 +8,7 @@ import { useAuth } from "../../hooks/useAuth";
 import { TASK_STATUS, getHousekeepingTasks, getTaskSummary } from "../../services/housekeepingService";
 import { getRoomStatusSummary } from "../../services/roomService";
 import { HOUSEKEEPING_TASK_LABELS } from "../../services/housekeepingService";
-import { formatRelative } from "../../utils/format";
+import { formatRelative, getGreeting } from "../../utils/format";
 import "../../styles/dashboard.css";
 import "../../styles/housekeeping.css";
 
@@ -46,7 +46,7 @@ function HousekeepingDashboard() {
     <>
       <div style={{ marginBottom: "var(--space-6)" }}>
         <h2 className="shms-heading" style={{ fontSize: "1.7rem", marginBottom: "var(--space-2)" }}>
-          Good morning, {firstName}.
+          {getGreeting()}, {firstName}.
         </h2>
         <p className="shms-subheading" style={{ fontSize: "var(--text-base)" }}>
           {outstanding.length === 0
