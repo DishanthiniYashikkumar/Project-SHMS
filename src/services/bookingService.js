@@ -80,7 +80,62 @@ export function canModify(booking) {
  * @param {object} [query] status, guestId, search, date, page, pageSize
  */
 export async function getBookings(query = {}) {
-  if (!USE_MOCK_API) return request("/bookings", { params: query });
+  if (!USE_MOCK_API) {
+  const [reservationData, reservationRoomData, roomsData, roomTypesData] = await Promise.all([
+    request("/reservations"),
+    request("/reservationrooms"),
+    request("/rooms"),
+    request("/roomtypes"),
+  ]);
+
+  const roomsById = new Map(
+    roomsData.rooms.map(([id, roomNumber, roomTypeId]) => [
+      id,
+      { roomNumber, roomTypeId },
+    ]),
+  );
+
+  const roomTypesById = new Map(
+    roomTypesData.room_types.map(([id, name]) => [id, name]),
+  );
+
+  const reservationRoomsByReservationId = new Map(
+    reservationRoomData.reservation_rooms.map(([, reservationId, roomId]) => [
+      reservationId,
+      roomId,
+    ]),
+  );
+
+  return {
+    items: reservationData.reservations.map(
+     ([id, guestId, createdAt, checkIn, checkOut, roomTypeId, status, specialRequests, total, firstName, lastName, email]) =>  {
+        const physicalRoomId = reservationRoomsByReservationId.get(id);
+        const room = physicalRoomId ? roomsById.get(physicalRoomId) : null;
+
+        return {
+          id,
+          reference: `RSV-${id}`,
+          guestId,
+          guestName: `${firstName} ${lastName}`,
+          guestEmail: email,
+          createdAt,
+          
+          checkIn,
+          checkOut,
+          roomId: physicalRoomId ?? null,
+          roomNumber: room?.roomNumber ?? null,
+          roomTypeName: room?.roomTypeId
+            ? roomTypesById.get(room.roomTypeId) ?? "Unknown"
+            : "Not allocated",
+          status: status.toUpperCase().replace(" ", "_"),
+          specialRequests,
+          total: Number(total),
+          currency: "LKR",
+        };
+      },
+    ),
+  };
+}
 
   await delay();
   const { status, guestId, search, date, page, pageSize } = query;
@@ -321,4 +376,7 @@ export async function getInvoiceForBooking(bookingId) {
   const invoice = invoices.find((inv) => inv.bookingId === bookingId);
   if (!invoice) throw new Error("No invoice has been issued for this booking yet.");
   return clone(invoice);
+}
+export async function getReservationRooms() {
+  if (!USE_MOCK_API) return request("/reservationrooms");
 }

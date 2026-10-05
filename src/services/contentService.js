@@ -17,13 +17,22 @@ import {
   highlights,
   testimonials,
 } from "./mock/hotel";
-
 export { HOTEL };
 
 export async function getFacilities() {
-  if (!USE_MOCK_API) return request("/content/facilities");
+  if (!USE_MOCK_API) {
+    const data = await request("/facilities");
+
+    return data.facilities.map(([id, name, description, status]) => ({
+      id,
+      name,
+      description,
+      status,
+    }));
+  }
 
   await delay(400);
+
   return clone(facilities);
 }
 

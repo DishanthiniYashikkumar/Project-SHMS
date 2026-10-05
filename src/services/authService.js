@@ -137,33 +137,33 @@ export async function login({ email, password, remember = false }) {
 }
 
 async function requestLogin({ email, password }) {
-  let response;
-  try {
-    response = await fetch(`${API_BASE_URL}/auth/login`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json", Accept: "application/json" },
-      body: JSON.stringify({ email: email.trim().toLowerCase(), password }),
-    });
-  } catch {
-    throw new AuthError("Unable to reach the server. Check your connection and try again.", 0);
-  }
+  const response = await fetch(`${API_BASE_URL}/login`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      username: email.trim(),
+      password,
+    }),
+  });
 
-  const payload = await response.json().catch(() => ({}));
+  const payload = await response.json();
 
   if (!response.ok) {
-    throw new AuthError(messageForStatus(response.status, payload.message), response.status);
-  }
-  if (!payload.token || !payload.user?.role) {
-    throw new AuthError("The server returned an unexpected response.", response.status);
+    throw new AuthError(
+      messageForStatus(response.status, payload.message),
+      response.status,
+    );
   }
 
   return {
-    token: payload.token,
+    token: `backend-${payload.user_id}`,
     user: {
-      id: payload.user.id,
-      name: payload.user.name,
-      email: payload.user.email,
-      role: String(payload.user.role).toUpperCase(),
+      id: payload.user_id,
+      name: payload.username,
+      email: payload.username,
+      role: String(payload.role).toUpperCase(),
     },
   };
 }

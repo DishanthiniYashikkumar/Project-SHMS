@@ -30,7 +30,7 @@ export const STAFF_ROLES = [
  * @param {object} [query] role, status, search, page, pageSize
  */
 export async function getUsers(query = {}) {
-  if (!USE_MOCK_API) return request("/users", { params: query });
+  if (!USE_MOCK_API) return request("/guests", { params: query });
 
   await delay();
   const { role, status, search, page, pageSize } = query;
@@ -60,13 +60,27 @@ export async function getUserById(userId) {
 
 /** Staff available to take an assignment, optionally narrowed by role. */
 export async function getStaff(role) {
-  if (!USE_MOCK_API) return request("/users/staff", { params: { role } });
+  if (!USE_MOCK_API) {
+    const data = await request("/staff");
+
+    return data.staff.map(([id, userId, name, department, joinedDate, status]) => ({
+      id,
+      userId,
+      name,
+      department,
+      joinedDate,
+      status,
+    }));
+  }
 
   await delay(400);
+
   return clone(
     users.filter(
       (user) =>
-        STAFF_ROLES.includes(user.role) && user.status === "ACTIVE" && (!role || user.role === role),
+        STAFF_ROLES.includes(user.role) &&
+        user.status === "ACTIVE" &&
+        (!role || user.role === role),
     ),
   );
 }

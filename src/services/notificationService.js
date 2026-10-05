@@ -15,7 +15,7 @@ export { NOTIFICATION_META, NOTIFICATION_TYPE };
 
 /** Newest first, optionally only unread. */
 export async function getNotifications({ userId, unreadOnly = false } = {}) {
-  if (!USE_MOCK_API) return request("/notifications", { params: { userId, unreadOnly } });
+  if (!USE_MOCK_API) return [];
 
   await delay(400);
   return clone(
