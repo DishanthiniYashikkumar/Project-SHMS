@@ -8,7 +8,7 @@ import { useToast } from "../../hooks/useToast";
 import {
   ROLE_LABELS,
   STAFF_ROLES,
-  getUsers,
+  getStaff,
   updateUserStatus,
 } from "../../services/userService";
 import { getServiceRequests } from "../../services/serviceRequestService";
@@ -82,11 +82,11 @@ function Staff() {
   const [detail, setDetail] = useState(null);
   const [confirming, setConfirming] = useState(null);
 
-  const load = useCallback(() => getUsers({ pageSize: 500 }), []);
+  const load = useCallback(() => getStaff(), []);
   const { data, isLoading, error, reload } = useAsync(load);
 
   const rows = useMemo(() => {
-    let items = (data?.items ?? []).filter((user) => STAFF_ROLES.includes(user.role));
+    let items = data ?? [];
     if (role) items = items.filter((item) => item.role === role);
     if (status) items = items.filter((item) => item.status === status);
     return items;

@@ -67,7 +67,21 @@ function availableCountFor(roomTypeId, checkIn, checkOut) {
  * @returns {Promise<Array>}
  */
 export async function getRoomTypes(query = {}) {
-  if (!USE_MOCK_API) return request("/rooms/types", { params: query });
+  if (!USE_MOCK_API) {
+  const data = await request("/roomtypes");
+
+  return data.room_types.map(([id, type, description, capacity, price]) => ({
+    id,
+    name: type,
+    type,
+    shortDescription: description,
+    pricePerNight: Number(price),
+    currency: "LKR",
+    capacity: { adults: Number(capacity), children: 0 },
+    amenities: [],
+  }));
+
+}
 
   await delay();
 
@@ -116,18 +130,39 @@ export function getRoomTypeCounts() {
 
 /** Room types flagged for the home page. */
 export async function getFeaturedRoomTypes() {
-  if (!USE_MOCK_API) return request("/rooms/types", { params: { featured: true } });
+  if (!USE_MOCK_API) {
+    const data = await request("/roomtypes");
+
+    return data.room_types.map(([id, type, description, capacity, price], index) => ({
+      id,
+      slug: type.toLowerCase(),
+      name: type,
+      type,
+      shortDescription: description,
+      pricePerNight: Number(price),
+      currency: "LKR",
+      capacity: { adults: Number(capacity), children: 0 },
+      bedType: "—",
+      sizeSqm: 0,
+      amenities: [],
+      images: roomTypes[index]?.images || [],
+      availableRooms: 0,
+      rating: 0,
+      reviewCount: 0,
+    }));
+  }
 
   await delay(400);
   return clone(roomTypes.filter((room) => room.featured));
 }
+
 
 /**
  * Fetches one room type by its URL slug.
  * @throws {Error} when no room matches
  */
 export async function getRoomTypeBySlug(slug, { checkIn, checkOut } = {}) {
-  if (!USE_MOCK_API) return request(`/rooms/types/${slug}`, { params: { checkIn, checkOut } });
+  if (!USE_MOCK_API) return request("/roomtypes");
 
   await delay();
   const room = roomTypes.find((rt) => rt.slug === slug);
@@ -145,7 +180,7 @@ export async function getRoomTypeBySlug(slug, { checkIn, checkOut } = {}) {
  */
 export async function checkAvailability({ checkIn, checkOut, guests } = {}) {
   if (!USE_MOCK_API) {
-    return request("/rooms/availability", { params: { checkIn, checkOut, guests } });
+    if (!USE_MOCK_API) return request("/rooms");
   }
 
   await delay(700);
@@ -166,7 +201,27 @@ export async function checkAvailability({ checkIn, checkOut, guests } = {}) {
 
 /** Physical rooms, each joined to its room type for display. */
 export async function getRooms({ status, floor } = {}) {
-  if (!USE_MOCK_API) return request("/rooms", { params: { status, floor } });
+  if (!USE_MOCK_API) {
+  const data = await request("/rooms");
+  const typeData = await request("/roomtypes");
+
+  const roomTypes = typeData.room_types;
+
+  return data.rooms.map(([id, number, roomTypeId, status]) => {
+    const roomType = roomTypes.find((type) => type[0] === roomTypeId);
+
+    return {
+      id,
+      number,
+      roomTypeId,
+      status,
+      floor: 0,
+      roomTypeName: roomType ? roomType[1] : "Room",
+      pricePerNight: roomType ? Number(roomType[4]) : 0,
+      housekeepingNote: "",
+    };
+  });
+}
 
   await delay();
   return rooms
@@ -179,7 +234,22 @@ export async function getRooms({ status, floor } = {}) {
 
 /** Counts by status, for the reception and admin dashboard tiles. */
 export async function getRoomStatusSummary() {
-  if (!USE_MOCK_API) return request("/rooms/summary");
+  if (!USE_MOCK_API) {
+  const data = await request("/rooms");
+
+  const summary = Object.fromEntries(
+    Object.values(ROOM_STATUS).map((status) => [status, 0])
+  );
+
+  data.rooms.forEach(([, , , status]) => {
+    summary[status] = (summary[status] ?? 0) + 1;
+  });
+
+  return {
+    total: data.rooms.length,
+    ...summary,
+  };
+}
 
   await delay(350);
   const summary = Object.fromEntries(Object.values(ROOM_STATUS).map((status) => [status, 0]));
@@ -195,13 +265,14 @@ export async function getRoomStatusSummary() {
  * @param {string} status  One of ROOM_STATUS
  */
 export async function updateRoomStatus(roomId, status) {
-  if (!USE_MOCK_API) {
-    return request(`/rooms/${roomId}/status`, { method: "PATCH", body: { status } });
-  }
+if (!USE_MOCK_API) return request(`/rooms/${roomId}`, { method: "PATCH", body: { status } });
 
   await delay(450);
   const room = rooms.find((r) => r.id === roomId);
   if (!room) throw new Error("That room no longer exists.");
   room.status = status;
   return clone(room);
+}
+export async function getRoomFacilities() {
+  if (!USE_MOCK_API) return request("/roomfacilities");
 }
