@@ -1,14 +1,16 @@
 from flask import Flask, request
+from flask_cors import CORS
 import psycopg2
 
 app = Flask(__name__)
+CORS(app)
 
 def get_db_connection():
     conn = psycopg2.connect(
         host="localhost",
         database="ocean dbs",
         user="postgres",
-        password="your password",
+        password="my password",
         port="5432"
     )
     return conn
@@ -30,7 +32,12 @@ def get_guests():
     conn = get_db_connection()
     cursor = conn.cursor()
 
-    cursor.execute("SELECT * FROM guest")
+    cursor.execute("""
+    SELECT g.*, u.first_name, u.last_name, u.email
+    FROM guest g
+    LEFT JOIN "user" u ON g.user_id = u.user_id
+    ORDER BY g.guest_id
+""")
 
     guests = cursor.fetchall()
 
@@ -60,7 +67,7 @@ def login():
                r.role_id, r.role_name
         FROM "user" u
         JOIN role r ON u.role_id = r.role_id
-        WHERE u.username = %s
+        WHERE u.email = %s
     """, (username,))
 
     user = cursor.fetchone()
@@ -168,24 +175,41 @@ def get_facilities():
 # Staff API
 # ======================
 
+
 @app.route("/staff")
 def get_staff():
     conn = get_db_connection()
     cursor = conn.cursor()
 
     cursor.execute("""
-        SELECT staff_id, user_id, position, department,
-               employment_date, employment_status
-        FROM staff
-        ORDER BY staff_id
+        SELECT
+            s.staff_id,
+            s.user_id,
+            u.first_name,
+            u.last_name,
+            s.position,
+            s.department,
+            r.role_name,
+            u.phone_number,
+            s.employment_status,
+            s.employment_date
+        FROM staff s
+        JOIN "user" u ON s.user_id = u.user_id
+        JOIN role r ON u.role_id = r.role_id
+        ORDER BY s.staff_id
     """)
 
-    staff = cursor.fetchall()
+    columns = [desc[0] for desc in cursor.description]
+    staff = [
+        dict(zip(columns, row))
+        for row in cursor.fetchall()
+    ]
 
     cursor.close()
     conn.close()
 
-    return {"staff": staff} 
+    return {"staff": staff}
+ 
 
 # ======================
 # Reservation API
@@ -197,12 +221,16 @@ def get_reservations():
     cursor = conn.cursor()
 
     cursor.execute("""
-        SELECT reservation_id, guest_id, reservation_date,
-               check_in_date, check_out_date, number_of_guests,
-               reservation_status, special_requests, total_amount
-        FROM reservation
-        ORDER BY reservation_id
+        SELECT r.reservation_id, r.guest_id, r.reservation_date,
+               r.check_in_date, r.check_out_date, r.number_of_guests,
+               r.reservation_status, r.special_requests, r.total_amount,
+               u.first_name, u.last_name, u.email
+        FROM reservation r
+        LEFT JOIN guest g ON r.guest_id = g.guest_id
+        LEFT JOIN "user" u ON g.user_id = u.user_id
+        ORDER BY r.reservation_id
     """)
+        
 
     reservations = cursor.fetchall()
 
@@ -239,4 +267,4 @@ def get_reservation_rooms():
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=False)
