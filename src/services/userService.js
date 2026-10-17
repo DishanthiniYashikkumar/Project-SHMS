@@ -63,14 +63,17 @@ export async function getStaff(role) {
   if (!USE_MOCK_API) {
     const data = await request("/staff");
 
-    return data.staff.map(([id, userId, name, department, joinedDate, status]) => ({
-      id,
-      userId,
-      name,
-      department,
-      joinedDate,
-      status,
-    }));
+    return data.staff.map((item) => ({
+      id: item.user_id,
+      userId: item.user_id,
+      name: `${item.first_name ?? ""} ${item.last_name ?? ""}`.trim() || item.position,
+      email: item.email ?? "",
+      department: item.department ?? "",
+      role: item.role_name,
+      phone: item.phone_number ?? "",
+      status: (item.employment_status ?? "Inactive").toUpperCase(),
+      createdAt: item.employment_date,
+    })).filter((item) => !role || item.role === role);
   }
 
   await delay(400);
@@ -84,6 +87,9 @@ export async function getStaff(role) {
     ),
   );
 }
+  
+
+
 
 export async function updateProfile(userId, changes) {
   if (!USE_MOCK_API) return request(`/users/${userId}`, { method: "PATCH", body: changes });

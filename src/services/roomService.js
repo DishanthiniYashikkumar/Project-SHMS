@@ -79,6 +79,7 @@ export async function getRoomTypes(query = {}) {
     currency: "LKR",
     capacity: { adults: Number(capacity), children: 0 },
     amenities: [],
+    images: roomTypes.find((room) => room.type === type)?.images || roomTypes[0].images,
   }));
 
 }

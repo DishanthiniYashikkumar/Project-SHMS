@@ -43,7 +43,7 @@ function RoomCard({ room, searchParams = "" }) {
     <article className="shms-room-card">
       <div className="shms-room-media">
         <img
-          src={images[0]}
+          src={images?.[0] || "/images/room-placeholder.jpg"}
           alt={`${name} — ${type} room at Ocean Stays`}
           loading="lazy"
           decoding="async"
@@ -103,7 +103,7 @@ function RoomCard({ room, searchParams = "" }) {
 
         <span className="shms-room-rating">
           <i className="bi bi-star-fill" aria-hidden="true" />
-          {rating.toFixed(1)}
+          {(rating ?? 0).toFixed(1)}
           <span>({reviewCount} reviews)</span>
         </span>
 
