@@ -2,11 +2,13 @@ from flask import Flask, request
 import psycopg2
 
 app = Flask(__name__)
+from roles import roles_bp
+app.register_blueprint(roles_bp)
 
 def get_db_connection():
     conn = psycopg2.connect(
         host="localhost",
-        database="ocean dbs",
+        database="Ocean Stays DB",
         user="postgres",
         password="your password",
         port="5432"
