@@ -13,7 +13,7 @@ def get_db_connection():
         host="localhost",
         database="Ocean Stays DB",
         user="postgres",
-        password="your password",
+        password="2003",
         port="5432"
     )
     return conn
