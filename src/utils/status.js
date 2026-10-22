@@ -42,7 +42,7 @@ const ROOM = {
   OCCUPIED: { label: "Occupied", tone: TONES.GOLD },
   CLEANING: { label: "Cleaning", tone: TONES.WARNING },
   DIRTY: { label: "Dirty", tone: TONES.WARNING },
-  MAINTENANCE: { label: "Maintenance", tone: TONES.DANGER },
+  MAINTENANCE: { label: "Undermaintaining", tone: TONES.DANGER },
 };
 
 const REQUEST = {

@@ -297,13 +297,9 @@ function ReceptionDashboard() {
                 <ul className="shms-rows" style={{ margin: 0 }}>
                   {[
                     "AVAILABLE",
-                    "READY",
                     "INSPECTED",
                     "RESERVED",
-                    "OCCUPIED",
                     "DIRTY",
-                    "CLEANING",
-                    "CLEAN",
                     "MAINTENANCE",
                   ].map(
                     (status) => (
