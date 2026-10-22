@@ -113,11 +113,11 @@ function Facilities() {
     { key: "department", header: "Department", sortable: true },
     { key: "hours", header: "Hours" },
     {
-      key: "capacity",
-      header: "Capacity",
+      key: "description",
+      header: "Description",
       sortable: true,
       align: "center",
-      render: (row) => (row.capacity > 0 ? row.capacity : <span className="shms-cell-muted">—</span>),
+      render: (row) => row.description || <span className="shms-cell-muted">—</span>,
     },
     {
       key: "status",

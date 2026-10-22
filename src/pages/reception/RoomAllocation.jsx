@@ -19,13 +19,9 @@ import "../../styles/dashboard.css";
 /** Ordered along the turnaround chain, so the board reads left to right. */
 const STATUS_ORDER = [
   ROOM_STATUS.AVAILABLE,
-  ROOM_STATUS.READY,
   ROOM_STATUS.INSPECTED,
   ROOM_STATUS.RESERVED,
-  ROOM_STATUS.OCCUPIED,
   ROOM_STATUS.DIRTY,
-  ROOM_STATUS.CLEANING,
-  ROOM_STATUS.CLEAN,
   ROOM_STATUS.MAINTENANCE,
 ];
 
@@ -247,13 +243,9 @@ function RoomAllocation() {
                     <strong>{getStatusMeta(status, "room").label}</strong>
                     <span>
                       {status === ROOM_STATUS.AVAILABLE && "Free to sell"}
-                      {status === ROOM_STATUS.READY && "Prepared for an arrival"}
                       {status === ROOM_STATUS.INSPECTED && "Passed inspection — sellable"}
                       {status === ROOM_STATUS.RESERVED && "Held for an arriving guest"}
-                      {status === ROOM_STATUS.OCCUPIED && "A guest is in house"}
                       {status === ROOM_STATUS.DIRTY && "Departed — awaiting cleaning"}
-                      {status === ROOM_STATUS.CLEANING && "With housekeeping now"}
-                      {status === ROOM_STATUS.CLEAN && "Cleaned — awaiting inspection"}
                       {status === ROOM_STATUS.MAINTENANCE && "Out of service"}
                     </span>
                   </span>

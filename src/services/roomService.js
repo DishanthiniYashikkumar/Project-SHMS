@@ -215,7 +215,7 @@ export async function getRooms({ status, floor } = {}) {
       id,
       number,
       roomTypeId,
-      status,
+      status: String(status).toUpperCase(),
       floor: 0,
       roomTypeName: roomType ? roomType[1] : "Room",
       pricePerNight: roomType ? Number(roomType[4]) : 0,
@@ -243,7 +243,8 @@ export async function getRoomStatusSummary() {
   );
 
   data.rooms.forEach(([, , , status]) => {
-    summary[status] = (summary[status] ?? 0) + 1;
+    const key = String(status).toUpperCase();
+    summary[key] = (summary[key] ?? 0) + 1;
   });
 
   return {
