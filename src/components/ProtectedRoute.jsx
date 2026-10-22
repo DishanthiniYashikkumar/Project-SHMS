@@ -1,5 +1,5 @@
 import { Navigate, useLocation } from "react-router-dom";
-import { getCurrentUser, isAuthenticated } from "../services/authService";
+import { useAuth } from "../hooks/useAuth";
 
 /**
  * Route guard for RBAC.
@@ -13,14 +13,16 @@ import { getCurrentUser, isAuthenticated } from "../services/authService";
  */
 function ProtectedRoute({ allow, children }) {
   const location = useLocation();
+  const { isAuthenticated, role } = useAuth();
 
-  if (!isAuthenticated()) {
-    // Remember where they were headed so login can send them back.
-    return <Navigate to="/login" replace state={{ from: location.pathname }} />;
+  if (!isAuthenticated) {
+    // Remember where they were headed so login can send them back. The query
+    // string matters — booking deep links carry the dates and guest count.
+    const from = `${location.pathname}${location.search}`;
+    return <Navigate to="/login" replace state={{ from }} />;
   }
 
-  const user = getCurrentUser();
-  if (allow?.length && !allow.includes(user?.role)) {
+  if (allow?.length && !allow.includes(role)) {
     return <Navigate to="/unauthorized" replace />;
   }
 
